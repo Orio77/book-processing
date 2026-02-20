@@ -20,7 +20,7 @@ public class Sentence {
     private String content;
 
     @Column(nullable = false)
-    private int sentenceNum;
+    private int sentenceIndex;
 
     @Column(nullable = false)
     private int pageNum;
