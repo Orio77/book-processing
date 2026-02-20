@@ -1,0 +1,6 @@
+spring.application.name=book-processing
+spring.jpa.hibernate.ddl-auto=create
+
+spring.datasource.url=jdbc:postgresql://localhost:5432/your-database-name
+spring.datasource.username=postgres
+spring.datasource.password=your-password
