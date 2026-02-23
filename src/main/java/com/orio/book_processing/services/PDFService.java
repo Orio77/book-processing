@@ -1,4 +1,4 @@
-package com.orio.book_processing.services;
+package com.orio.book_processing.services.pdf;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.springframework.stereotype.Service;
@@ -17,8 +17,10 @@ public class PDFService {
 
     public PDF savePDF(PDDocument doc, MultipartFile file, byte[] fileBytes) {
         PDF pdf = new PDF();
-        String title = (file.getOriginalFilename() == null || file.getOriginalFilename().isBlank()) ? "unknown"
-                : file.getOriginalFilename();
+        String originalFilename = file.getOriginalFilename();
+        String title = (originalFilename == null || originalFilename.isBlank())
+                ? "unknown"
+                : originalFilename;
 
         pdf.setTitle(title);
         pdf.setTotalPages(doc.getNumberOfPages());
