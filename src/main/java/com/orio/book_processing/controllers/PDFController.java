@@ -1,5 +1,6 @@
 package com.orio.book_processing.controllers;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -19,18 +20,28 @@ import com.orio.book_processing.dtos.request.PdfUploadRequest;
 import com.orio.book_processing.dtos.response.ChapterResponse;
 import com.orio.book_processing.dtos.response.PdfResponse;
 import com.orio.book_processing.dtos.response.SentenceResponse;
+import com.orio.book_processing.services.IUploadService;
+
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/pdf")
 @CrossOrigin(origins = { "http://localhost:5174", "http://localhost:5175" })
+@RequiredArgsConstructor
 public class PDFController {
+
+    private final IUploadService uploadService;
 
     @PostMapping("/upload")
     public ResponseEntity<Long> uploadPdf(@ModelAttribute PdfUploadRequest uploadRequest) {
 
         // call service that handles pdf upload and return pdf id assigned in the db
-
-        return ResponseEntity.ok(1l);
+        try {
+            Long pdfId = uploadService.upload(uploadRequest.getFile(), uploadRequest.getChapterPageRanges());
+            return ResponseEntity.ok(pdfId);
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().body(-1l);
+        }
     }
 
     @GetMapping("/get/{id}")
