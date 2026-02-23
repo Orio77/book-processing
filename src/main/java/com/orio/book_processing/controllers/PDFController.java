@@ -19,9 +19,9 @@ import com.orio.book_processing.dtos.request.PdfUploadRequest;
 import com.orio.book_processing.dtos.response.ChapterResponse;
 import com.orio.book_processing.dtos.response.PdfResponse;
 import com.orio.book_processing.dtos.response.SentenceResponse;
-import com.orio.book_processing.services.FileContentException;
-import com.orio.book_processing.services.IUploadService;
-import com.orio.book_processing.services.PDFLoadingException;
+import com.orio.book_processing.exceptions.FileContentException;
+import com.orio.book_processing.exceptions.PDFLoadingException;
+import com.orio.book_processing.services.upload.IUploadService;
 
 import lombok.RequiredArgsConstructor;
 

@@ -1,4 +1,4 @@
-package com.orio.book_processing.services;
+package com.orio.book_processing.services.upload;
 
 import java.io.IOException;
 import java.util.List;
@@ -10,9 +10,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.orio.book_processing.dtos.request.PageRange;
+import com.orio.book_processing.exceptions.FileContentException;
+import com.orio.book_processing.exceptions.PDFLoadingException;
 import com.orio.book_processing.models.Chapter;
 import com.orio.book_processing.models.PDF;
 import com.orio.book_processing.models.Sentence;
+import com.orio.book_processing.services.chapter.ChapterService;
+import com.orio.book_processing.services.pdf.PDFService;
+import com.orio.book_processing.services.sentence.SentenceService;
+import com.orio.book_processing.services.tokenizer.ITokenizer;
 
 import lombok.RequiredArgsConstructor;
 

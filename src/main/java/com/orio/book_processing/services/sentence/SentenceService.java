@@ -1,4 +1,4 @@
-package com.orio.book_processing.services;
+package com.orio.book_processing.services.sentence;
 
 import java.util.List;
 import java.util.stream.IntStream;

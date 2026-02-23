@@ -1,4 +1,4 @@
-package com.orio.book_processing.services;
+package com.orio.book_processing.services.tokenizer;
 
 import java.util.List;
 
