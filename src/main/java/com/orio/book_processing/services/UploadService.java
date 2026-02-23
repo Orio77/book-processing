@@ -5,12 +5,9 @@ import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.IntStream;
 
-import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPageTree;
-import org.apache.pdfbox.text.PDFTextStripper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,82 +23,54 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class UploadService {
+public class UploadService implements IUploadService {
 
     private final PDFRepository pdfRepo;
     private final ChapterRepository chapterRepo;
     private final SentenceRepository sentenceRepo;
 
-    public Long upload(MultipartFile file, List<PageRange> chapterPageRanges) {
+    public PDF savePDF(PDDocument doc, MultipartFile file) throws IOException {
+        PDF pdf = new PDF();
+        String title = (file.getOriginalFilename() == null || file.getOriginalFilename().isBlank()) ? "unknown"
+                : file.getOriginalFilename();
 
-        try {
-            PDDocument doc = Loader.loadPDF(file.getBytes());
+        pdf.setTitle(title);
+        pdf.setTotalPages(doc.getNumberOfPages());
+        pdf.setContent(file.getBytes());
 
-            PDF resPdf = savePDF(doc, file);
-
-            List<Chapter> chapterObjects = createChapterObjects(resPdf, chapterPageRanges);
-            saveChapterObjects(chapterObjects);
-
-            PDPageTree pages = doc.getPages();
-            PDFTextStripper stripper = new PDFTextStripper();
-
-            for (int i = 0; i <= pages.getCount(); i++) {
-                stripper.setStartPage(i);
-                stripper.setEndPage(i);
-                String pageContent = stripper.getText(doc);
-
-                List<String> sentences = getSentences(pageContent);
-                List<Sentence> sentenceObjs = createSentenceObjects(sentences, resPdf, null, i);
-                saveSentenceObjects(sentenceObjs);
-            }
-
-            return resPdf.getId();
-
-        } catch (IOException e) {
-            return null;
-        }
+        return pdfRepo.saveAndFlush(pdf);
     }
 
-    public PDF savePDF(PDDocument doc, MultipartFile file) {
-
-        try {
-            PDF pdf = new PDF();
-            String title = (file.getOriginalFilename() == null || file.getOriginalFilename().isEmpty()) ? "unknown"
-                    : file.getOriginalFilename();
-
-            pdf.setTitle(title);
-            pdf.setTotalPages(doc.getNumberOfPages());
-            pdf.setContent(file.getBytes());
-
-            return pdfRepo.saveAndFlush(pdf);
-
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    public List<Chapter> createChapterObjects(PDF pdf, List<PageRange> chapterPageRanges) {
+    public List<Chapter> createChapters(PDF pdf, List<PageRange> chapterPageRanges) {
 
         return chapterPageRanges.stream().map((PageRange pageRange) -> {
-            try {
-                Chapter chapter = new Chapter();
-                chapter.setPdf(pdf);
-                chapter.setStartPage(pageRange.startPage());
-                chapter.setEndPage(pageRange.endPage());
-
-                return chapter;
-            } catch (Exception e) {
-                return null;
-            }
+            Chapter chapter = new Chapter();
+            chapter.setPdf(pdf);
+            chapter.setStartPage(pageRange.startPage());
+            chapter.setEndPage(pageRange.endPage());
+            return chapter;
         }).toList();
     }
 
-    public void saveChapterObjects(List<Chapter> chapterObjects) {
-        chapterRepo.saveAll(chapterObjects);
+    public void saveChapters(List<Chapter> chapters) {
+        chapterRepo.saveAll(chapters);
     }
 
-    public List<String> getSentences(String str) {
+    public int getChapterIndex(int pageIndex, List<PageRange> chapterPageRanges) {
+        // Find the range wihtin which the page is placed
+        for (int i = 0; i < chapterPageRanges.size(); i++) {
+            if (pageIndex >= chapterPageRanges.get(i).startPage() && pageIndex <= chapterPageRanges.get(i).endPage()) {
+                return i;
+            }
+        }
+
+        // When page isn't placed within any of chapter page ranges
+        throw new IllegalArgumentException("Invalid page range");
+    }
+
+    public List<String> getStrSentences(String str) {
         BreakIterator iterator = BreakIterator.getSentenceInstance(Locale.US);
+        iterator.setText(str);
         List<String> sentences = new ArrayList<>();
 
         int start = iterator.first();
@@ -111,21 +80,20 @@ public class UploadService {
         return sentences;
     }
 
-    public List<Sentence> createSentenceObjects(List<String> strSentences, PDF pdf, Chapter chapter, int pageNum) {
-        AtomicInteger sentenceIdx = new AtomicInteger(0);
-
-        return strSentences.stream().map(strSentence -> {
+    public List<Sentence> createSentences(List<String> strSentences, PDF pdf, Chapter chapter, int pageNum) {
+        return IntStream.range(0, strSentences.size()).mapToObj(idx -> {
+            String strSentence = strSentences.get(idx);
             Sentence sentence = new Sentence();
             sentence.setPdf(pdf);
             sentence.setChapter(chapter);
             sentence.setContent(strSentence);
             sentence.setPageNum(pageNum);
-            sentence.setSentenceIndex(sentenceIdx.getAndIncrement());
+            sentence.setSentenceIndex(idx);
             return sentence;
         }).toList();
     }
 
-    public void saveSentenceObjects(List<Sentence> sentenceObjs) {
-        sentenceRepo.saveAll(sentenceObjs);
+    public void saveSentences(List<Sentence> sentences) {
+        sentenceRepo.saveAll(sentences);
     }
 }
