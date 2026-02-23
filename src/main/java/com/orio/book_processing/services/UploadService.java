@@ -27,9 +27,20 @@ public class UploadService implements IUploadService {
     private final ITokenizer tokenizer;
 
     @Override
-    public Long upload(MultipartFile file, List<PageRange> chapterPageRanges) throws IOException {
-        try (PDDocument doc = Loader.loadPDF(file.getBytes())) {
-            PDF resPdf = pdfService.savePDF(doc, file);
+    public Long upload(MultipartFile file, List<PageRange> chapterPageRanges)
+            throws PDFLoadingException, FileContentException {
+
+        // Read file bytes
+        byte[] fileBytes;
+        try {
+            fileBytes = file.getBytes();
+        } catch (IOException e) {
+            throw new FileContentException(e.getMessage(), e.getCause());
+        }
+
+        // proceed with upload logic
+        try (PDDocument doc = Loader.loadPDF(fileBytes)) {
+            PDF resPdf = pdfService.savePDF(doc, file, fileBytes);
 
             List<Chapter> chapters = chapterService.createChapters(resPdf, chapterPageRanges);
             chapterService.saveChapters(chapters);
@@ -48,9 +59,11 @@ public class UploadService implements IUploadService {
                 List<Sentence> sentences = sentenceService.createSentences(strSentences, resPdf, chapter, i);
                 sentenceService.saveSentences(sentences);
             }
-
             return resPdf.getId();
-        }
-    }
 
+        } catch (IOException e) {
+            throw new PDFLoadingException(e.getMessage(), e.getCause());
+        }
+
+    }
 }

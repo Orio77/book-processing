@@ -1,6 +1,5 @@
 package com.orio.book_processing.controllers;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -20,7 +19,9 @@ import com.orio.book_processing.dtos.request.PdfUploadRequest;
 import com.orio.book_processing.dtos.response.ChapterResponse;
 import com.orio.book_processing.dtos.response.PdfResponse;
 import com.orio.book_processing.dtos.response.SentenceResponse;
+import com.orio.book_processing.services.FileContentException;
 import com.orio.book_processing.services.IUploadService;
+import com.orio.book_processing.services.PDFLoadingException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -33,15 +34,16 @@ public class PDFController {
     private final IUploadService uploadService;
 
     @PostMapping("/upload")
-    public ResponseEntity<Long> uploadPdf(@ModelAttribute PdfUploadRequest uploadRequest) {
-
-        // call service that handles pdf upload and return pdf id assigned in the db
+    public ResponseEntity<?> uploadPdf(@ModelAttribute PdfUploadRequest uploadRequest) {
+        Long pdfId;
         try {
-            Long pdfId = uploadService.upload(uploadRequest.getFile(), uploadRequest.getChapterPageRanges());
-            return ResponseEntity.ok(pdfId);
-        } catch (IOException e) {
-            return ResponseEntity.internalServerError().body(-1l);
+            pdfId = uploadService.upload(uploadRequest.getFile(), uploadRequest.getChapterPageRanges());
+        } catch (FileContentException e) {
+            return ResponseEntity.internalServerError().body("Failed to read file content: " + e.getMessage());
+        } catch (PDFLoadingException e) {
+            return ResponseEntity.internalServerError().body("Failed to load PDF: " + e.getMessage());
         }
+        return ResponseEntity.ok(pdfId);
     }
 
     @GetMapping("/get/{id}")
