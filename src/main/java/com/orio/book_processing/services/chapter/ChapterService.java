@@ -9,6 +9,7 @@ import com.orio.book_processing.models.Chapter;
 import com.orio.book_processing.models.PDF;
 import com.orio.book_processing.repositories.ChapterRepository;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -54,5 +55,13 @@ public class ChapterService {
         log.error("Couldn't find page {} in chapter ranges: {}", pageIndex, chapterPageRanges);
         // When page isn't placed within any of chapter page ranges
         throw new IllegalArgumentException("Invalid page range");
+    }
+
+    public Chapter getChapter(Long id) throws EntityNotFoundException {
+        return chapterRepo.getReferenceById(id);
+    }
+
+    public List<Chapter> getAllChapters(Long pdfId) {
+        return chapterRepo.getByPdfId(pdfId);
     }
 }

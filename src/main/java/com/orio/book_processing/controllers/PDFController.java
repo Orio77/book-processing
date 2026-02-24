@@ -22,7 +22,9 @@ import com.orio.book_processing.dtos.response.PdfResponse;
 import com.orio.book_processing.dtos.response.SentenceResponse;
 import com.orio.book_processing.exceptions.FileContentException;
 import com.orio.book_processing.exceptions.PDFLoadingException;
+import com.orio.book_processing.models.Chapter;
 import com.orio.book_processing.models.PDF;
+import com.orio.book_processing.services.chapter.ChapterService;
 import com.orio.book_processing.services.pdf.PDFService;
 import com.orio.book_processing.services.upload.IUploadService;
 
@@ -37,6 +39,7 @@ public class PDFController {
 
     private final IUploadService uploadService;
     private final PDFService pdfService;
+    private final ChapterService chapterService;
 
     @PostMapping("/upload")
     public ResponseEntity<?> uploadPdf(@RequestPart("file") MultipartFile file,
@@ -83,12 +86,22 @@ public class PDFController {
 
     @GetMapping("/chapter/get/{id}")
     public ResponseEntity<ChapterResponse> getChapter(@PathVariable Long id) {
-        return ResponseEntity.ok(null);
+
+        try {
+            Chapter chapter = chapterService.getChapter(id);
+            return ResponseEntity.ok(ChapterResponse.from(chapter));
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/chapter/get/all/{pdfId}")
     public ResponseEntity<List<ChapterResponse>> getAllChaptersByPdf(@PathVariable Long pdfId) {
-        return ResponseEntity.ok(List.of());
+
+        List<Chapter> chapters = chapterService.getAllChapters(pdfId);
+
+        return chapters.isEmpty() ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(chapters.stream().map(ChapterResponse::from).toList());
     }
 
     @GetMapping("/sentence/get/{pdfId}")
