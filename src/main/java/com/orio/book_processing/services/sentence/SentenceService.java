@@ -5,6 +5,7 @@ import java.util.stream.IntStream;
 
 import org.springframework.stereotype.Service;
 
+import com.orio.book_processing.dtos.request.PageRange;
 import com.orio.book_processing.models.Chapter;
 import com.orio.book_processing.models.PDF;
 import com.orio.book_processing.models.Sentence;
@@ -39,6 +40,19 @@ public class SentenceService {
     public void saveSentences(List<Sentence> sentences) {
         log.info("Saving {} sentences", sentences.size());
         sentenceRepo.saveAll(sentences);
+    }
+
+    public List<Sentence> getSentencesInRange(PageRange pageRange, Long pdfId) {
+        return sentenceRepo.getByPageNumBetweenAndPdfId(pageRange.startPage(), pageRange.endPage(), pdfId);
+    }
+
+    public List<List<Sentence>> getSentencesInRanges(List<PageRange> ranges, Long pdfId) {
+        List<Sentence> all = sentenceRepo.getByPdfId(pdfId);
+        return ranges.stream()
+                .map(range -> all.stream()
+                        .filter(s -> s.getPageNum() >= range.startPage() && s.getPageNum() <= range.endPage())
+                        .toList())
+                .toList();
     }
 
 }

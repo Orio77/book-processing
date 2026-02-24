@@ -24,8 +24,10 @@ import com.orio.book_processing.exceptions.FileContentException;
 import com.orio.book_processing.exceptions.PDFLoadingException;
 import com.orio.book_processing.models.Chapter;
 import com.orio.book_processing.models.PDF;
+import com.orio.book_processing.models.Sentence;
 import com.orio.book_processing.services.chapter.ChapterService;
 import com.orio.book_processing.services.pdf.PDFService;
+import com.orio.book_processing.services.sentence.SentenceService;
 import com.orio.book_processing.services.upload.IUploadService;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -33,13 +35,14 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/pdf")
-@CrossOrigin(origins = { "http://localhost:5173, http://localhost:5174", "http://localhost:5175" })
+@CrossOrigin(origins = { "http://localhost:5173", "http://localhost:5174", "http://localhost:5175" })
 @RequiredArgsConstructor
 public class PDFController {
 
     private final IUploadService uploadService;
     private final PDFService pdfService;
     private final ChapterService chapterService;
+    private final SentenceService sentenceService;
 
     @PostMapping("/upload")
     public ResponseEntity<?> uploadPdf(@RequestPart("file") MultipartFile file,
@@ -107,13 +110,19 @@ public class PDFController {
     @GetMapping("/sentence/get/{pdfId}")
     public ResponseEntity<List<SentenceResponse>> getSentencesInRange(@ModelAttribute PageRange pageRange,
             @PathVariable Long pdfId) {
-        return ResponseEntity.ok(List.of());
+        List<Sentence> sentences = sentenceService.getSentencesInRange(pageRange, pdfId);
+        return sentences.isEmpty() ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(sentences.stream().map(SentenceResponse::from).toList());
     }
 
     @PostMapping("/sentence/get/ranges/{pdfId}")
     public ResponseEntity<List<List<SentenceResponse>>> getSentencesInRanges(
             @RequestBody List<PageRange> ranges, @PathVariable Long pdfId) {
-        return ResponseEntity.ok(List.of());
+
+        List<List<Sentence>> sentenceGroups = sentenceService.getSentencesInRanges(ranges, pdfId);
+        return sentenceGroups.isEmpty() ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(sentenceGroups.stream()
+                        .map(sentenceGroup -> sentenceGroup.stream().map(SentenceResponse::from).toList()).toList());
     }
 
 }
