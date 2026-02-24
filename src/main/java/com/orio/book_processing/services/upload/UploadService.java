@@ -53,7 +53,7 @@ public class UploadService implements IUploadService {
 
             PDFTextStripper stripper = new PDFTextStripper();
 
-            for (int i = 0; i < doc.getNumberOfPages(); i++) {
+            for (int i = 1; i <= doc.getNumberOfPages(); i++) {
                 stripper.setStartPage(i);
                 stripper.setEndPage(i);
                 String pageContent = stripper.getText(doc);
