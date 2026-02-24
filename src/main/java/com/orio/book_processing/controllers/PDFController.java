@@ -22,8 +22,11 @@ import com.orio.book_processing.dtos.response.PdfResponse;
 import com.orio.book_processing.dtos.response.SentenceResponse;
 import com.orio.book_processing.exceptions.FileContentException;
 import com.orio.book_processing.exceptions.PDFLoadingException;
+import com.orio.book_processing.models.PDF;
+import com.orio.book_processing.services.pdf.PDFService;
 import com.orio.book_processing.services.upload.IUploadService;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -33,6 +36,7 @@ import lombok.RequiredArgsConstructor;
 public class PDFController {
 
     private final IUploadService uploadService;
+    private final PDFService pdfService;
 
     @PostMapping("/upload")
     public ResponseEntity<?> uploadPdf(@RequestPart("file") MultipartFile file,
@@ -50,24 +54,31 @@ public class PDFController {
 
     @GetMapping("/get/{id}")
     public ResponseEntity<PdfResponse> getPdf(@PathVariable Long id) {
-
-        // return pdf without content unless explicitly required
-
-        return ResponseEntity.ok(null);
+        try {
+            PDF pdf = pdfService.getPdf(id);
+            return ResponseEntity.ok(PdfResponse.from(pdf));
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/get/all")
     public ResponseEntity<List<PdfResponse>> getAllPdfs(@RequestParam(defaultValue = "false") Boolean includeContent) {
-        return ResponseEntity.ok(List.of());
+        List<PDF> pdfs = pdfService.getAllPdfs();
+
+        return pdfs.isEmpty() ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(pdfs.stream().map(PdfResponse::from).toList());
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Boolean> deletepdf(@PathVariable Long id) {
 
-        // call service that handles pdf deletion, verify pdf is no longer in the db and
-        // return the value
-
-        return ResponseEntity.ok(false);
+        boolean isDeleted = pdfService.deletePDF(id);
+        if (isDeleted) {
+            return ResponseEntity.ok(true);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/chapter/get/{id}")
