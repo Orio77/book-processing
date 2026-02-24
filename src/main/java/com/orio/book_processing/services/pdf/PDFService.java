@@ -9,6 +9,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.orio.book_processing.models.PDF;
 import com.orio.book_processing.repositories.PDFRepository;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,24 +45,23 @@ public class PDFService {
         return savedPDF;
     }
 
+    @Transactional(readOnly = true)
     public PDF getPdf(Long id) throws EntityNotFoundException {
-        return pdfRepo.getReferenceById(id);
+        return pdfRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("PDF not found with id: " + id));
     }
 
+    @Transactional(readOnly = true)
     public List<PDF> getAllPdfs() {
         return pdfRepo.findAll();
     }
 
+    @Transactional
     public boolean deletePDF(Long id) {
-
-        pdfRepo.deleteById(id);
-
-        try {
-            pdfRepo.getReferenceById(id);
+        if (!pdfRepo.existsById(id)) {
             return false;
-        } catch (EntityNotFoundException e) {
-            return true;
         }
+        pdfRepo.deleteById(id);
+        return true;
     }
 
 }

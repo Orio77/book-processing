@@ -14,6 +14,7 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
 @Entity
@@ -35,10 +36,8 @@ public class PDF {
     private byte[] content;
 
     @OneToMany(mappedBy = "pdf", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
     private List<Chapter> chapters = new ArrayList<>();
-
-    @OneToMany(mappedBy = "pdf", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Sentence> sentences = new ArrayList<>();
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();

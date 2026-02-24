@@ -33,7 +33,7 @@ public class SentenceService {
             return sentence;
         }).toList();
         log.info("Created {} sentences out of {} string sentences for pdf \"{}\", chapter \"{}\" and page {}",
-                sentences.size(), pdf.getTitle(), chapter.getTitle(), pageNum);
+                sentences.size(), strSentences.size(), pdf.getTitle(), chapter.getTitle(), pageNum);
         return sentences;
     }
 
