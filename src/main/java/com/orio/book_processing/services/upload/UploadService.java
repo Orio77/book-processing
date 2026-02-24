@@ -46,7 +46,8 @@ public class UploadService implements IUploadService {
 
         // proceed with upload logic
         try (PDDocument doc = Loader.loadPDF(fileBytes)) {
-            PDF resPdf = pdfService.savePDF(doc, file, fileBytes);
+            PDF resPdf = pdfService.createPDF(doc, file, fileBytes);
+            resPdf = pdfService.savePDF(resPdf);
 
             List<Chapter> chapters = chapterService.createChapters(resPdf, chapterPageRanges);
             chapterService.saveChapters(chapters);

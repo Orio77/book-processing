@@ -8,14 +8,16 @@ import com.orio.book_processing.models.PDF;
 import com.orio.book_processing.repositories.PDFRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class PDFService {
 
     private final PDFRepository pdfRepo;
 
-    public PDF savePDF(PDDocument doc, MultipartFile file, byte[] fileBytes) {
+    public PDF createPDF(PDDocument doc, MultipartFile file, byte[] fileBytes) {
         PDF pdf = new PDF();
         String originalFilename = file.getOriginalFilename();
         String title = (originalFilename == null || originalFilename.isBlank())
@@ -26,7 +28,16 @@ public class PDFService {
         pdf.setTotalPages(doc.getNumberOfPages());
         pdf.setContent(fileBytes);
 
-        return pdfRepo.saveAndFlush(pdf);
+        log.info("Created pdf \"{}\" with {} pages", title, doc.getNumberOfPages());
+
+        return pdf;
+    }
+
+    public PDF savePDF(PDF pdf) {
+        log.info("Saving {}...", pdf.getTitle());
+        PDF savedPDF = pdfRepo.saveAndFlush(pdf);
+        log.info("Saved {} with id: {}", pdf.getTitle(), pdf.getId());
+        return savedPDF;
     }
 
 }
