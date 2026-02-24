@@ -12,10 +12,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.orio.book_processing.dtos.request.PageRange;
-import com.orio.book_processing.dtos.request.PdfUploadRequest;
 import com.orio.book_processing.dtos.response.ChapterResponse;
 import com.orio.book_processing.dtos.response.PdfResponse;
 import com.orio.book_processing.dtos.response.SentenceResponse;
@@ -27,17 +28,18 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/pdf")
-@CrossOrigin(origins = { "http://localhost:5174", "http://localhost:5175" })
+@CrossOrigin(origins = { "http://localhost:5173, http://localhost:5174", "http://localhost:5175" })
 @RequiredArgsConstructor
 public class PDFController {
 
     private final IUploadService uploadService;
 
     @PostMapping("/upload")
-    public ResponseEntity<?> uploadPdf(@ModelAttribute PdfUploadRequest uploadRequest) {
+    public ResponseEntity<?> uploadPdf(@RequestPart("file") MultipartFile file,
+            @RequestPart("chapterPageRanges") List<PageRange> chapterPageRanges) {
         Long pdfId;
         try {
-            pdfId = uploadService.upload(uploadRequest.getFile(), uploadRequest.getChapterPageRanges());
+            pdfId = uploadService.upload(file, chapterPageRanges);
         } catch (FileContentException e) {
             return ResponseEntity.internalServerError().body("Failed to read file content: " + e.getMessage());
         } catch (PDFLoadingException e) {
@@ -78,14 +80,15 @@ public class PDFController {
         return ResponseEntity.ok(List.of());
     }
 
-    @GetMapping("/sentence/get")
-    public ResponseEntity<List<SentenceResponse>> getSentencesInRange(@ModelAttribute PageRange pageRange) {
+    @GetMapping("/sentence/get/{pdfId}")
+    public ResponseEntity<List<SentenceResponse>> getSentencesInRange(@ModelAttribute PageRange pageRange,
+            @PathVariable Long pdfId) {
         return ResponseEntity.ok(List.of());
     }
 
-    @PostMapping("/sentence/get/ranges")
+    @PostMapping("/sentence/get/ranges/{pdfId}")
     public ResponseEntity<List<List<SentenceResponse>>> getSentencesInRanges(
-            @RequestBody List<PageRange> ranges) {
+            @RequestBody List<PageRange> ranges, @PathVariable Long pdfId) {
         return ResponseEntity.ok(List.of());
     }
 
