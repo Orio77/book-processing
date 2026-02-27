@@ -3,6 +3,8 @@ package com.orio.book_processing.book_management.models;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.stream.Collectors;
+
 import jakarta.annotation.Nullable;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -48,4 +50,10 @@ public class Chapter {
     @OneToMany(mappedBy = "chapter", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     private List<Sentence> sentences = new ArrayList<>();
+
+    public String getText() {
+        return sentences.stream()
+                .map(Sentence::getContent)
+                .collect(Collectors.joining());
+    }
 }
