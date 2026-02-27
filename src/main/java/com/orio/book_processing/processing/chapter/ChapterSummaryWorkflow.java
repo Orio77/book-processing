@@ -10,8 +10,10 @@ import com.orio.book_processing.processing.chapter.services.ChapterSummaryServic
 import com.orio.book_processing.processing.chapter.services.ISummaryService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class ChapterSummaryWorkflow {
 
@@ -21,10 +23,14 @@ public class ChapterSummaryWorkflow {
 
     public Long generateChapterSummary(Long chapterId) throws LLMGenerationException {
         // Get the chapter
+        log.info("Parsing chapter from the database...");
         Chapter chapter = chapterService.getChapter(chapterId);
+        log.info("Retrieved chapter {} from the database", chapter.getId());
 
         // Create a summary
+        log.info("Generating summary for chapter {}...", chapter.getId());
         String summary = summaryService.generateChapterSummary(chapter.getText());
+        log.info("Summary for chapter {} generated.");
 
         // Convert summary text to an object
         ChapterSummary chapterSummary = new ChapterSummary();
@@ -32,7 +38,9 @@ public class ChapterSummaryWorkflow {
         chapterSummary.setSummaryText(summary);
 
         // Save the summary object
+        log.info("Saving chapter summary...");
         ChapterSummary savedChapterSummary = chapterSummaryService.saveAndFlush(chapterSummary);
+        log.info("Chapter summary {} saved", chapterSummary.getId());
 
         // Return the ID
         return savedChapterSummary.getId();
