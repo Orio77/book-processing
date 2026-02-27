@@ -1,4 +1,6 @@
-package com.orio.book_processing.processing;
+package com.orio.book_processing.processing.chapter.dtos;
+
+import com.orio.book_processing.processing.chapter.models.ChapterSummary;
 
 public record ChapterSummaryResponse(
         Long id,

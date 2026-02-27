@@ -1,4 +1,4 @@
-package com.orio.book_processing.processing;
+package com.orio.book_processing.processing.chapter.controllers;
 
 import java.util.List;
 
@@ -11,6 +11,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.orio.book_processing.processing.chapter.ChapterSummaryWorkflow;
+import com.orio.book_processing.processing.chapter.dtos.ChapterSummaryResponse;
+import com.orio.book_processing.processing.chapter.exceptions.LLMGenerationException;
+import com.orio.book_processing.processing.chapter.services.ChapterSummaryService;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
