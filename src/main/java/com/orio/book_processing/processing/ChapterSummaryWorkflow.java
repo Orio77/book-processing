@@ -15,7 +15,7 @@ public class ChapterSummaryWorkflow {
     private final ChapterService chapterService;
     private final ChapterSummaryService chapterSummaryService;
 
-    public Long generateChapterSummary(Long chapterId) {
+    public Long generateChapterSummary(Long chapterId) throws LLMGenerationException {
         Chapter chapter = chapterService.getChapter(chapterId);
         String summary = summaryService.generateChapterSummary(chapter.getText());
         ChapterSummary chapterSummary = new ChapterSummary();

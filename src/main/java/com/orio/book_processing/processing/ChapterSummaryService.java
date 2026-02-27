@@ -1,8 +1,10 @@
 package com.orio.book_processing.processing;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -19,7 +21,16 @@ public class ChapterSummaryService {
         return chapterSummaryRepo.saveAndFlush(chapterSummary);
     }
 
-    public ChapterSummary getReferenceById(Long id) throws EntityNotFoundException {
-        return chapterSummaryRepo.getReferenceById(id);
+    public Optional<List<ChapterSummary>> findByChapterId(Long chapterId) {
+        return chapterSummaryRepo.findByChapterId(chapterId);
+    }
+
+    public Optional<ChapterSummary> getReferenceById(Long id) {
+        return Optional.of(chapterSummaryRepo.getReferenceById(id));
+    }
+
+    public boolean deleteById(Long id) {
+        chapterSummaryRepo.deleteById(id);
+        return !chapterSummaryRepo.existsById(id);
     }
 }

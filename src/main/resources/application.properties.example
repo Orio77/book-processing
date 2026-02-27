@@ -4,3 +4,10 @@ spring.jpa.hibernate.ddl-auto=create
 spring.datasource.url=jdbc:postgresql://localhost:5432/your-database-name
 spring.datasource.username=postgres
 spring.datasource.password=your-password
+
+spring.servlet.multipart.max-file-size=50MB
+spring.servlet.multipart.max-request-size=50MB
+
+spring.threads.virtual.enabled=true
+
+# spring.ai.ollama.chat.model=ministral-3:8b
