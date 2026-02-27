@@ -20,6 +20,7 @@ import com.orio.book_processing.book_management.services.pdf.PDFService;
 import com.orio.book_processing.book_management.services.sentence.SentenceService;
 import com.orio.book_processing.book_management.services.tokenizer.ITokenizer;
 
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -33,6 +34,7 @@ public class UploadService implements IUploadService {
     private final ITokenizer tokenizer;
 
     @Override
+    @Transactional
     public Long upload(MultipartFile file, List<PageRange> chapterPageRanges)
             throws PDFLoadingException, FileContentException {
 
