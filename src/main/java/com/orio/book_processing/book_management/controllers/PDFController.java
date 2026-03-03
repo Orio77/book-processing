@@ -3,7 +3,6 @@ package com.orio.book_processing.book_management.controllers;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -35,7 +34,6 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/pdf")
-@CrossOrigin(origins = { "http://localhost:5173", "http://localhost:5174", "http://localhost:5175" })
 @RequiredArgsConstructor
 public class PDFController {
 
