@@ -31,5 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+launch.json
 
 *.properties
