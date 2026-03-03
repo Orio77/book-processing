@@ -1,5 +1,7 @@
 package com.orio.book_processing.processing.ideas.extraction;
 
+import java.util.List;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,4 +19,6 @@ public class Idea {
     private Long id;
 
     private String title;
+
+    private List<String> supportingArguments;
 }

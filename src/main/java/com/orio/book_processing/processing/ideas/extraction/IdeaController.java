@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonParseException;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,12 +25,15 @@ public class IdeaController {
     private final IdeaExtractionManagementService ideaExtractionManagementService;
 
     @PostMapping("/extract")
-    public ResponseEntity<List<Idea>> extractIdeasByChapterId(@RequestParam Long chapterId) {
+    public ResponseEntity<?> extractIdeasByChapterId(@RequestParam Long chapterId) {
 
-        List<Idea> ideas = ideaExtractionManagementService.extractIdeas(chapterId);
-        log.info("extraction completed");
-
-        return ResponseEntity.ok(ideas);
+        try {
+            List<Idea> ideas = ideaExtractionManagementService.extractIdeas(chapterId);
+            log.info("extraction completed");
+            return ResponseEntity.ok(ideas);
+        } catch (JsonParseException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping("/get/all/{chapterId}")
