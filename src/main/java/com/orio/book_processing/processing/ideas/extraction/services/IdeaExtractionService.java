@@ -1,4 +1,4 @@
-package com.orio.book_processing.processing.ideas.extraction;
+package com.orio.book_processing.processing.ideas.extraction.services;
 
 import java.util.List;
 
@@ -8,6 +8,8 @@ import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.converter.BeanOutputConverter;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
+
+import com.orio.book_processing.processing.ideas.extraction.models.Idea;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

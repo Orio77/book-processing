@@ -1,4 +1,4 @@
-package com.orio.book_processing.processing.ideas.extraction;
+package com.orio.book_processing.processing.ideas.extraction.controllers;
 
 import java.util.List;
 
@@ -10,6 +10,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.orio.book_processing.processing.ideas.extraction.models.Idea;
+import com.orio.book_processing.processing.ideas.extraction.models.IdeaResponse;
+import com.orio.book_processing.processing.ideas.extraction.services.IdeaExtractionManagementService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

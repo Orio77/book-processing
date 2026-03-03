@@ -1,4 +1,4 @@
-package com.orio.book_processing.processing.ideas.extraction;
+package com.orio.book_processing.processing.ideas.extraction.models;
 
 import java.io.Serializable;
 

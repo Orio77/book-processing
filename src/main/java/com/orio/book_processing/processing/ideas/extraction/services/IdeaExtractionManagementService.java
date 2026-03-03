@@ -1,4 +1,4 @@
-package com.orio.book_processing.processing.ideas.extraction;
+package com.orio.book_processing.processing.ideas.extraction.services;
 
 import java.util.List;
 
@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.orio.book_processing.book_management.services.chapter.ChapterService;
+import com.orio.book_processing.processing.ideas.extraction.models.Idea;
+import com.orio.book_processing.processing.ideas.extraction.repositories.IdeaRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

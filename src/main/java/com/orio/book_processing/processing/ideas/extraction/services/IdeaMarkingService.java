@@ -1,4 +1,4 @@
-package com.orio.book_processing.processing.ideas.extraction;
+package com.orio.book_processing.processing.ideas.extraction.services;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,6 +12,9 @@ import org.springframework.stereotype.Service;
 
 import com.orio.book_processing.book_management.models.Sentence;
 import com.orio.book_processing.book_management.services.sentence.SentenceService;
+import com.orio.book_processing.processing.ideas.extraction.models.Idea;
+import com.orio.book_processing.processing.ideas.extraction.models.IdeaSentence;
+import com.orio.book_processing.processing.ideas.extraction.repositories.IdeaSentenceRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
