@@ -55,4 +55,8 @@ public class SentenceService {
                 .toList();
     }
 
+    public List<Sentence> getSentencesByChapterId(Long chapterId) {
+        return sentenceRepo.getByChapterId(chapterId);
+    }
+
 }
