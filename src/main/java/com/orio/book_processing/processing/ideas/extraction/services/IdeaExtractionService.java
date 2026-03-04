@@ -2,14 +2,18 @@ package com.orio.book_processing.processing.ideas.extraction.services;
 
 import java.util.List;
 
-import org.springframework.ai.chat.model.ChatModel;
+import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.chat.model.Generation;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.converter.BeanOutputConverter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 
-import com.orio.book_processing.processing.ideas.extraction.models.Idea;
+import com.orio.book_processing.book_management.models.Sentence;
+import com.orio.book_processing.processing.ideas.extraction.models.IdeaExtractionAiResponse;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,10 +23,25 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class IdeaExtractionService {
 
-    private final ChatModel chatModel;
+    // private final ChatModel chatModel;
+
+    @Autowired
+    @Qualifier("extractedIdeas")
+    private String extractedIdeas;
 
     private static final String EXTRACTION_PROMPT = """
-                Extract core ideas from the given text.
+                Extract the core ideas from the following text.
+
+                Work through the text ONE IDEA AT A TIME:
+                  1. Identify an idea.
+                  2. Write the supporting arguments for THAT idea.
+                  3. Provide ids of sentences THAT idea is contained in
+                  4. Then move on to the next idea.
+
+                  Avoid using quotation marks inside field values. Rephrase titles and arguments that would require them.
+
+                The text sentences are formatted as {sentenceId: "sentence content"}.
+                Use the sentenceId values as-is — do not invent or modify IDs.
 
                 TEXT:
                 \"""
@@ -33,24 +52,31 @@ public class IdeaExtractionService {
                 %s
             """;
 
-    public List<Idea> getIdeas(String chapterText) {
-        BeanOutputConverter<List<Idea>> outConv = new BeanOutputConverter<>(
-                new ParameterizedTypeReference<List<Idea>>() {
+    public IdeaExtractionAiResponse getIdeas(List<Sentence> sentences) {
+        log.info("Extracting ideas from {} sentences...", sentences.size());
+        // prepare chapter text
+        String chapterText = sentences.toString();
+
+        // prepare output converter
+        BeanOutputConverter<IdeaExtractionAiResponse> outConv = new BeanOutputConverter<>(
+                new ParameterizedTypeReference<IdeaExtractionAiResponse>() {
                 });
 
-        log.info("Extracting ideas...");
-        // perform idea extraction here
-        ChatResponse response = chatModel
-                .call(new Prompt(EXTRACTION_PROMPT.formatted(chapterText, outConv.getFormat())));
+        // prepare prompt
+        Prompt prompt = new Prompt(EXTRACTION_PROMPT.formatted(chapterText, outConv.getFormat()));
+        log.debug("Calling model with extraction prompt: \n\n{}\n\n", prompt.toString());
 
+        // call LLM
+        ChatResponse response = mockChatResponse(); // chatModel.call(prompt);
         log.debug("Response received: \n\n{}\n\n", response.getResult().getOutput().getText());
 
+        // convert output
         log.info("Converting the JSON response to objects...");
-        List<Idea> ideas = outConv.convert(response.getResult().getOutput().getText());
-        log.info("Created {} idea objects from the JSON response", ideas.size());
-        return ideas.stream().map(idea -> {
-            idea.setId(null);
-            return idea;
-        }).toList();
+        return outConv.convert(response.getResult().getOutput().getText());
+    }
+
+    private ChatResponse mockChatResponse() {
+        return ChatResponse.builder().generations(List.of(new Generation(new AssistantMessage(extractedIdeas))))
+                .build();
     }
 }

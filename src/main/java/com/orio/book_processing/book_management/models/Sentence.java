@@ -43,4 +43,10 @@ public class Sentence {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "chapter_id", nullable = false)
     private Chapter chapter;
+
+    @Override
+    public String toString() {
+        return "{%s: \"%s\"}".formatted(this.id, this.content);
+    }
+
 }

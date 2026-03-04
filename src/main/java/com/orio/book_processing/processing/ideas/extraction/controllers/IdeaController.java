@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.orio.book_processing.processing.ideas.extraction.models.Idea;
+import com.orio.book_processing.processing.ideas.extraction.models.IdeaExtractionAiResponse;
 import com.orio.book_processing.processing.ideas.extraction.models.IdeaResponse;
 import com.orio.book_processing.processing.ideas.extraction.services.IdeaExtractionManagementService;
 
@@ -29,10 +29,11 @@ public class IdeaController {
     @PostMapping("/extract")
     public ResponseEntity<?> extractIdeasByChapterId(@RequestParam Long chapterId) {
 
-        List<Idea> ideas = ideaExtractionManagementService.extractIdeas(chapterId);
+        IdeaExtractionAiResponse result = ideaExtractionManagementService.extractIdeas(chapterId);
         log.info("extraction completed");
-        return ResponseEntity.ok(ideas);
 
+        return ResponseEntity.ok(
+                "Ideas created: %d".formatted(result.ideaContainers().size()));
     }
 
     @GetMapping("/get/all/{chapterId}")
