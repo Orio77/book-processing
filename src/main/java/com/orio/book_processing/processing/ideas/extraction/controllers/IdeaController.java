@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.orio.book_processing.processing.ideas.extraction.models.IdeaArgumentDTO;
 import com.orio.book_processing.processing.ideas.extraction.models.IdeaExtractionAiResponse;
-import com.orio.book_processing.processing.ideas.extraction.models.IdeaWithSentences;
-import com.orio.book_processing.processing.ideas.extraction.services.IdeaArgumentService;
+import com.orio.book_processing.processing.ideas.extraction.models.dtos.response.IdeaArgumentDTO;
+import com.orio.book_processing.processing.ideas.extraction.models.dtos.response.IdeaWithSentences;
 import com.orio.book_processing.processing.ideas.extraction.services.IdeaExtractionManagementService;
-import com.orio.book_processing.processing.ideas.extraction.services.IdeaService;
+import com.orio.book_processing.processing.ideas.extraction.services.model_wrappers.IdeaArgumentService;
+import com.orio.book_processing.processing.ideas.extraction.services.model_wrappers.IdeaService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,8 +37,7 @@ public class IdeaController {
         IdeaExtractionAiResponse result = ideaExtractionManagementService.extractIdeas(chapterId);
         log.info("extraction completed");
 
-        return ResponseEntity.ok(
-                "Ideas created: %d".formatted(result.ideaContainers().size()));
+        return ResponseEntity.ok(result.ideaContainers().size());
     }
 
     @GetMapping("/get/all/{chapterId}")

@@ -1,4 +1,4 @@
-package com.orio.book_processing.processing.ideas.extraction.models;
+package com.orio.book_processing.processing.ideas.extraction.models.dtos.response;
 
 import java.util.List;
 

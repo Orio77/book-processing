@@ -14,15 +14,15 @@ import com.orio.book_processing.book_management.services.sentence.SentenceServic
 import com.orio.book_processing.processing.ideas.extraction.models.Idea;
 import com.orio.book_processing.processing.ideas.extraction.models.IdeaArgument;
 import com.orio.book_processing.processing.ideas.extraction.models.IdeaExtractionAiResponse;
-import com.orio.book_processing.processing.ideas.extraction.models.IdeaExtractionAiResponse.IdeaRequest;
 import com.orio.book_processing.processing.ideas.extraction.models.IdeaSentence;
+import com.orio.book_processing.processing.ideas.extraction.models.IdeaExtractionAiResponse.IdeaRequest;
 import com.orio.book_processing.processing.ideas.extraction.repositories.IdeaRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@Service
 @Slf4j
+@Service
 @RequiredArgsConstructor
 public class IdeaExtractionManagementService {
 
@@ -33,21 +33,32 @@ public class IdeaExtractionManagementService {
 
     @Transactional
     public IdeaExtractionAiResponse extractIdeas(Long chapterId) {
+        log.info("Fetching sentences for chapter {}...", chapterId);
         List<Sentence> sentences = sentenceService.getSentencesByChapterId(chapterId);
+        log.info("Fetched {} sentences for chapter {}", sentences.size(), chapterId);
+
+        // group sentences by ids
         Map<Long, Sentence> sentencesByIds = sentences.stream()
                 .collect(Collectors.toMap(Sentence::getId, sentence -> sentence));
-        IdeaExtractionAiResponse extractionResponse = extractionService.getIdeas(sentences);
 
+        log.info("Calling LLM for idea estraction...");
+        IdeaExtractionAiResponse extractionResponse = extractionService.getIdeas(sentences);
+        log.info("LLM found {} ideas in chapter {}", extractionResponse.ideaContainers().size(), chapterId);
+
+        log.info("Saving {} ideas and sentences they belong too...", extractionResponse.ideaContainers().size());
         extractionResponse.ideaContainers().forEach(saveIdeaContainer(sentencesByIds));
+        log.info("Saved {} ideas from chapter {}", extractionResponse.ideaContainers().size(), chapterId);
 
         return extractionResponse;
     }
 
     private Consumer<? super IdeaRequest> saveIdeaContainer(Map<Long, Sentence> sentencesByIds) {
         return ideaContainer -> {
+            // create idea
             Idea idea = new Idea();
             idea.setTitle(ideaContainer.ideaTitle());
 
+            // create arguments
             List<IdeaArgument> ideaArguments = ideaContainer.arguments().stream().map(argText -> {
                 IdeaArgument argument = new IdeaArgument();
                 argument.setIdea(idea);
@@ -55,8 +66,10 @@ public class IdeaExtractionManagementService {
                 return argument;
             }).toList();
 
+            // link arguments to the idea
             idea.setArguments(ideaArguments);
 
+            // create a ling between idea and sentences it is contained in
             List<IdeaSentence> ideaSentences = ideaContainer.ideaSentencesIds().stream().map(id -> {
                 IdeaSentence ideaSentence = new IdeaSentence();
                 ideaSentence.setIdea(idea);
@@ -66,6 +79,7 @@ public class IdeaExtractionManagementService {
 
             idea.setSentences(ideaSentences);
 
+            // cascade save
             ideaRepo.save(idea);
         };
     }

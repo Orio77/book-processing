@@ -1,4 +1,4 @@
-package com.orio.book_processing.processing.ideas.extraction.services;
+package com.orio.book_processing.processing.ideas.extraction.services.model_wrappers;
 
 import java.util.List;
 
@@ -9,7 +9,9 @@ import com.orio.book_processing.processing.ideas.extraction.models.IdeaSentence;
 import com.orio.book_processing.processing.ideas.extraction.repositories.IdeaSentenceRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class IdeaSentenceService {
@@ -18,7 +20,9 @@ public class IdeaSentenceService {
 
     public List<Sentence> getSentencesByIdeaId(Long ideaId) {
 
+        log.info("Fetching sentences for idea {}", ideaId);
         List<IdeaSentence> ideaSentences = ideaSentenceRepo.findAllByIdeaId(ideaId);
+        log.info("Found {} sentences for idea {}", ideaSentences.size(), ideaId);
 
         return ideaSentences.stream().map(IdeaSentence::getSentence).toList();
     }

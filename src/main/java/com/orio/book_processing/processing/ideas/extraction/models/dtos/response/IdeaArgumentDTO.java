@@ -1,4 +1,6 @@
-package com.orio.book_processing.processing.ideas.extraction.models;
+package com.orio.book_processing.processing.ideas.extraction.models.dtos.response;
+
+import com.orio.book_processing.processing.ideas.extraction.models.IdeaArgument;
 
 public record IdeaArgumentDTO(Long id, String text) {
 

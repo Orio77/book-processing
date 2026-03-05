@@ -2,13 +2,10 @@ package com.orio.book_processing.processing.ideas.extraction.services;
 
 import java.util.List;
 
-import org.springframework.ai.chat.messages.AssistantMessage;
+import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
-import org.springframework.ai.chat.model.Generation;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.converter.BeanOutputConverter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 
@@ -21,13 +18,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class IdeaExtractionService {
+public class IdeaExtractionService implements IIdeaExtractionService {
 
-    // private final ChatModel chatModel;
-
-    @Autowired
-    @Qualifier("extractedIdeas")
-    private String extractedIdeas;
+    private final ChatModel chatModel;
 
     private static final String EXTRACTION_PROMPT = """
                 Extract the core ideas from the following text.
@@ -52,6 +45,7 @@ public class IdeaExtractionService {
                 %s
             """;
 
+    @Override
     public IdeaExtractionAiResponse getIdeas(List<Sentence> sentences) {
         log.info("Extracting ideas from {} sentences...", sentences.size());
         // prepare chapter text
@@ -67,16 +61,11 @@ public class IdeaExtractionService {
         log.debug("Calling model with extraction prompt: \n\n{}\n\n", prompt.toString());
 
         // call LLM
-        ChatResponse response = mockChatResponse(); // chatModel.call(prompt);
+        ChatResponse response = chatModel.call(prompt);
         log.debug("Response received: \n\n{}\n\n", response.getResult().getOutput().getText());
 
         // convert output
         log.info("Converting the JSON response to objects...");
         return outConv.convert(response.getResult().getOutput().getText());
-    }
-
-    private ChatResponse mockChatResponse() {
-        return ChatResponse.builder().generations(List.of(new Generation(new AssistantMessage(extractedIdeas))))
-                .build();
     }
 }
