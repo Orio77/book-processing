@@ -11,10 +11,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.orio.book_processing.processing.ideas.extraction.models.IdeaArgument;
+import com.orio.book_processing.processing.ideas.extraction.models.IdeaArgumentDTO;
 import com.orio.book_processing.processing.ideas.extraction.models.IdeaExtractionAiResponse;
 import com.orio.book_processing.processing.ideas.extraction.models.IdeaWithSentences;
+import com.orio.book_processing.processing.ideas.extraction.services.IdeaArgumentService;
 import com.orio.book_processing.processing.ideas.extraction.services.IdeaExtractionManagementService;
+import com.orio.book_processing.processing.ideas.extraction.services.IdeaService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +28,8 @@ import lombok.extern.slf4j.Slf4j;
 public class IdeaController {
 
     private final IdeaExtractionManagementService ideaExtractionManagementService;
+    private final IdeaService ideaService;
+    private final IdeaArgumentService ideaArgumentService;
 
     @PostMapping("/extract")
     public ResponseEntity<?> extractIdeasByChapterId(@RequestParam Long chapterId) {
@@ -39,22 +43,25 @@ public class IdeaController {
 
     @GetMapping("/get/all/{chapterId}")
     public ResponseEntity<List<IdeaWithSentences>> getAllIdeasBychapterId(@PathVariable Long chapterId) {
-        return ResponseEntity.ok(null);
+        return ideaService.getIdeasByChapter(chapterId).map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/get/{ideaId}")
     public ResponseEntity<IdeaWithSentences> getIdeaById(@PathVariable Long ideaId) {
-        return ResponseEntity.ok(null);
+        return ideaService.getIdea(ideaId).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/argument/get/{ideaId}")
-    public ResponseEntity<List<IdeaArgument>> getArgumentsForIdea(@PathVariable Long ideaId) {
-        return ResponseEntity.ok(null);
+    public ResponseEntity<List<IdeaArgumentDTO>> getArgumentsForIdea(@PathVariable Long ideaId) {
+        return ideaArgumentService.getIdeaArgumentsForIdea(ideaId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/delete/{ideaId}")
     public ResponseEntity<Boolean> deleteIdeaById(@PathVariable Long ideaId) {
-        return ResponseEntity.ok(true);
+        return ideaService.deleteIdea(ideaId).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
 }
