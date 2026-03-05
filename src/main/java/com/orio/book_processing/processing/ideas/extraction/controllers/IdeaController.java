@@ -11,8 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.orio.book_processing.processing.ideas.extraction.models.IdeaArgument;
 import com.orio.book_processing.processing.ideas.extraction.models.IdeaExtractionAiResponse;
-import com.orio.book_processing.processing.ideas.extraction.models.IdeaResponse;
+import com.orio.book_processing.processing.ideas.extraction.models.IdeaWithSentences;
 import com.orio.book_processing.processing.ideas.extraction.services.IdeaExtractionManagementService;
 
 import lombok.RequiredArgsConstructor;
@@ -37,17 +38,22 @@ public class IdeaController {
     }
 
     @GetMapping("/get/all/{chapterId}")
-    public ResponseEntity<List<IdeaResponse>> getAllIdeasByChapterId(@PathVariable Long chapterId) {
-        return ResponseEntity.ok(List.of());
+    public ResponseEntity<List<IdeaWithSentences>> getAllIdeasBychapterId(@PathVariable Long chapterId) {
+        return ResponseEntity.ok(null);
     }
 
     @GetMapping("/get/{ideaId}")
-    public ResponseEntity<IdeaResponse> getIdeaById(@PathVariable Long ideaId) {
-        return ResponseEntity.ok(IdeaResponse.from(null, null));
+    public ResponseEntity<IdeaWithSentences> getIdeaById(@PathVariable Long ideaId) {
+        return ResponseEntity.ok(null);
     }
 
-    @DeleteMapping("/delete")
-    public ResponseEntity<Boolean> deleteIdeaById(@RequestParam Long ideaId) {
+    @GetMapping("/argument/get/{ideaId}")
+    public ResponseEntity<List<IdeaArgument>> getArgumentsForIdea(@PathVariable Long ideaId) {
+        return ResponseEntity.ok(null);
+    }
+
+    @DeleteMapping("/delete/{ideaId}")
+    public ResponseEntity<Boolean> deleteIdeaById(@PathVariable Long ideaId) {
         return ResponseEntity.ok(true);
     }
 
