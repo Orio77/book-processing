@@ -1,0 +1,47 @@
+package com.orio.book_processing.chat;
+
+import org.springframework.ai.chat.model.ChatModel;
+import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.stereotype.Service;
+
+import com.orio.book_processing.processing.chapter.exceptions.LLMGenerationException;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class ExplanationChatService {
+
+    private final ChatModel chatModel;
+
+    private static final String EXPLANATION_PROMPT = """
+            Reader didn't understand something about the following fragment:
+            \"""
+            %s
+            \"""
+
+            Explain it properly and thoroughly
+
+            In the context of this chapter:
+            \"""
+            %s
+            \"""
+            """;
+
+    public String generateChatResponse(String sentenceContext, String chapterText)
+            throws LLMGenerationException {
+        try {
+            log.info("Calling {} for an explanation...", chatModel.getDefaultOptions().getModel());
+            return chatModel
+                    .call(new Prompt(EXPLANATION_PROMPT.formatted(sentenceContext, chapterText)))
+                    .getResult()
+                    .getOutput()
+                    .getText();
+        } catch (NullPointerException e) {
+            log.error("Received response from the LLM was null");
+            throw new LLMGenerationException(e.getMessage(), e.getCause());
+        }
+    }
+}
