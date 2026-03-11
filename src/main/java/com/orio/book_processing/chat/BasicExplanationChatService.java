@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ExplanationChatService {
+public class BasicExplanationChatService implements IExplanationChatService {
 
     private final ChatModel chatModel;
 
@@ -30,12 +30,15 @@ public class ExplanationChatService {
             \"""
             """;
 
+    @Override
     public String generateChatResponse(String sentenceContext, String chapterText)
             throws LLMGenerationException {
         try {
             log.info("Calling {} for an explanation...", chatModel.getDefaultOptions().getModel());
+            Prompt prompt = new Prompt(EXPLANATION_PROMPT.formatted(sentenceContext, chapterText));
+            log.debug("Calling {} with prompt:\n\n{}\n\n", chatModel.getDefaultOptions().getModel(), prompt);
             return chatModel
-                    .call(new Prompt(EXPLANATION_PROMPT.formatted(sentenceContext, chapterText)))
+                    .call(prompt)
                     .getResult()
                     .getOutput()
                     .getText();

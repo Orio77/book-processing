@@ -2,16 +2,12 @@ package com.orio.book_processing.chat;
 
 import java.util.List;
 
+import com.orio.book_processing.book_management.models.Sentence;
 import com.orio.book_processing.processing.ideas.extraction.models.dtos.response.SentenceDTO;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+public record PDFChatRequest(Long chapterId, String query, List<SentenceDTO> context) {
 
-@Data
-@NoArgsConstructor
-public class PDFChatRequest {
-
-    private Long chapterId;
-    private String query;
-    private List<SentenceDTO> context;
+    public static PDFChatRequest from(Long chapterId, String query, List<Sentence> sentences) {
+        return new PDFChatRequest(chapterId, query, sentences.stream().map(SentenceDTO::from).toList());
+    }
 }

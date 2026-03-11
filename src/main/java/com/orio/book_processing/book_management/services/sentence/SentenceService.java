@@ -42,6 +42,10 @@ public class SentenceService {
         sentenceRepo.saveAll(sentences);
     }
 
+    public List<Sentence> getSentencesByIds(List<Long> sentenceIds) {
+        return sentenceRepo.findAllById(sentenceIds);
+    }
+
     public List<Sentence> getSentencesInRange(PageRange pageRange, Long pdfId) {
         return sentenceRepo.getByPageNumBetweenAndPdfId(pageRange.startPage(), pageRange.endPage(), pdfId);
     }

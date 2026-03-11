@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class QueryChatService {
+public class QueryChatService implements IQueryChatService {
 
     private final ChatModel chatModel;
 
@@ -33,11 +33,14 @@ public class QueryChatService {
             \"""
             """;
 
+    @Override
     public String generateChatResponse(String sentenceContext, String query, String chapterText)
             throws LLMGenerationException {
         try {
             log.info("Sending query to {}...", chatModel.getDefaultOptions().getModel());
-            return chatModel.call(new Prompt(CHAT_PROMPT.formatted(sentenceContext, query, chapterText))).getResult()
+            Prompt prompt = new Prompt(CHAT_PROMPT.formatted(sentenceContext, query, chapterText));
+            log.debug("Calling {} with prompt:\n\n{}\n\n", chatModel.getDefaultOptions().getModel(), prompt);
+            return chatModel.call(prompt).getResult()
                     .getOutput()
                     .getText();
         } catch (NullPointerException e) {

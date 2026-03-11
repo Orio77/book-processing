@@ -17,18 +17,23 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ChatWorkflowService {
 
-    private final QueryChatService queryChatService;
-    private final ExplanationChatService explanationChatService;
+    private final IQueryChatService queryChatService;
+    private final IExplanationChatService explanationChatService;
     private final ChapterService chapterService;
+    private final ChatResponseService chatResponseService;
 
     public String chat(List<SentenceDTO> context, String query, Long chapterId) throws LLMGenerationException {
         log.info("Chat request received for chapter {}: {}\n", chapterId, query);
         String contextStr = getContext(context);
         String chapterText = chapterService.getChapter(chapterId).getText();
 
-        return !(query == null || query.isBlank())
+        String response = !(query == null || query.isBlank())
                 ? queryChatService.generateChatResponse(contextStr, query, chapterText)
                 : explanationChatService.generateChatResponse(contextStr, chapterText);
+
+        chatResponseService.save(chapterId, query, response, context);
+
+        return response;
     }
 
     private String getContext(List<SentenceDTO> context) {
