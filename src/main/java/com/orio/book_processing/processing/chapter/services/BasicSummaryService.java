@@ -22,10 +22,11 @@ public class BasicSummaryService implements ISummaryService {
     private static final String CHAPTER_PLACEHOLDER = "{chapter}";
 
     private final String chapterSummaryStringPrompt = """
-                Provide a valuable summary of the following chapter:
+                Explain what the author is trying to convey by laying out a map of the following chapter's ideas and painting a clear picture at the end:
 
                 %s
-            """.formatted(CHAPTER_PLACEHOLDER);
+            """
+            .formatted(CHAPTER_PLACEHOLDER);
 
     @Override
     public String generateChapterSummary(String chapterText) throws LLMGenerationException {
