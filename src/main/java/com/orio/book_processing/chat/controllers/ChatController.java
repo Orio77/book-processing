@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.orio.book_processing.chat.ChatWorkflowService;
-import com.orio.book_processing.chat.controllers.dtos.PDFChatRequest;
-import com.orio.book_processing.chat.controllers.dtos.PDFChatResponse;
+import com.orio.book_processing.chat.dtos.PDFChatRequest;
+import com.orio.book_processing.chat.dtos.PDFChatResponse;
 import com.orio.book_processing.chat.services.impl.ChatResponseService;
 
 import lombok.RequiredArgsConstructor;

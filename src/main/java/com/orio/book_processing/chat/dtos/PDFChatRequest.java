@@ -1,4 +1,4 @@
-package com.orio.book_processing.chat.controllers.dtos;
+package com.orio.book_processing.chat.dtos;
 
 import java.util.List;
 

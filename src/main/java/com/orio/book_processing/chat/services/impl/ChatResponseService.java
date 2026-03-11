@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.orio.book_processing.book_management.models.Sentence;
 import com.orio.book_processing.book_management.services.sentence.SentenceService;
-import com.orio.book_processing.chat.controllers.dtos.PDFChatResponse;
+import com.orio.book_processing.chat.dtos.PDFChatResponse;
 import com.orio.book_processing.chat.models.ChatResponse;
 import com.orio.book_processing.chat.models.ChatResponseContext;
 import com.orio.book_processing.chat.repositories.ChatResponseContextRepository;
