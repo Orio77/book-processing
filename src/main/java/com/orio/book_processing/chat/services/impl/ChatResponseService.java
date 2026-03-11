@@ -1,8 +1,10 @@
 package com.orio.book_processing.chat.services.impl;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.orio.book_processing.book_management.models.Sentence;
 import com.orio.book_processing.book_management.services.sentence.SentenceService;
@@ -13,6 +15,7 @@ import com.orio.book_processing.chat.repositories.ChatResponseContextRepository;
 import com.orio.book_processing.chat.repositories.ChatResponseRepository;
 import com.orio.book_processing.processing.ideas.extraction.models.dtos.response.SentenceDTO;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -67,8 +70,59 @@ public class ChatResponseService {
                     .filter(ctx -> ctx.getChatResponse().getId().equals(chatResponse.getId()))
                     .map(ctx -> ctx.getSentence().getId())
                     .toList();
-            return new PDFChatResponse(chatResponse.getQuery(), chatResponse.getContent(), sentenceIds);
+            return new PDFChatResponse(chatResponse.getQuery(), chatResponse.getId(), chatResponse.getContent(),
+                    sentenceIds);
         }).toList();
+    }
+
+    public Optional<PDFChatResponse> update(Long chatResponseId, String newChatResponseBody) {
+        log.info("Updating ChatResponse {}", chatResponseId);
+        try {
+            // Get ChatResponse from the db
+            ChatResponse chatResponse = chatResponseRepo.getReferenceById(chatResponseId);
+            // Change ChatResponse content
+            chatResponse.setContent(newChatResponseBody);
+            // Save new ChatResponse
+            ChatResponse savedChatResponse = chatResponseRepo.saveAndFlush(chatResponse);
+
+            // Create a Response Object
+
+            // Get linked to ChatResponse Sentences
+            List<Long> chatResponseContextSentenceIds = chatResponseContextRepo.findByChatResponse(savedChatResponse)
+                    .stream()
+                    .map(ctx -> ctx.getSentence().getId()).toList();
+
+            if (chatResponseContextSentenceIds.isEmpty()) {
+                log.error("No sentences linked to ChatResponse {} were found", chatResponseId);
+                return Optional.empty();
+            }
+
+            // Create a response obj
+            PDFChatResponse pdfChatResponse = new PDFChatResponse(chatResponse.getQuery(), chatResponse.getId(),
+                    newChatResponseBody,
+                    chatResponseContextSentenceIds);
+
+            return Optional.of(pdfChatResponse);
+        } catch (EntityNotFoundException e) {
+            log.error("ChatResponse with id {} not found", chatResponseId);
+            return Optional.empty();
+        }
+    }
+
+    @Transactional
+    public boolean deleteChatResponse(Long chatResponseId) {
+        log.info("Deleting ChatResponse {}...", chatResponseId);
+        if (!chatResponseRepo.existsById(chatResponseId)) {
+            log.error("Deletion of ChatResponse {} failed - not found", chatResponseId);
+            return false;
+        }
+
+        Long deletedLinks = chatResponseContextRepo.deleteByChatResponse_Id(chatResponseId);
+        log.info("Deleted {} ChatResponseContext links for ChatResponse {}", deletedLinks, chatResponseId);
+
+        chatResponseRepo.deleteById(chatResponseId);
+        log.info("Successfully deleted ChatResponse {}", chatResponseId);
+        return true;
     }
 
 }

@@ -14,4 +14,8 @@ public interface ChatResponseContextRepository
 
     List<ChatResponseContext> findByChatResponseIn(List<ChatResponse> chatResponses);
 
+    List<ChatResponseContext> findByChatResponse(ChatResponse chatResponses);
+
+    Long deleteByChatResponse_Id(Long chatResponseId);
+
 }

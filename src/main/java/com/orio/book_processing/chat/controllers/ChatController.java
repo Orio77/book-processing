@@ -3,9 +3,11 @@ package com.orio.book_processing.chat.controllers;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -51,6 +53,21 @@ public class ChatController {
     @GetMapping("/response/get/all/{chapterId}")
     public ResponseEntity<List<PDFChatResponse>> getChatResponsesForChapter(@PathVariable Long chapterId) {
         return ResponseEntity.ok(chatResponseService.getChatResponsesForChapter(chapterId));
+    }
+
+    @PutMapping("/response/edit/{chatResponseId}")
+    public ResponseEntity<PDFChatResponse> updateChatResponse(@PathVariable Long chatResponseId,
+            @RequestBody String body) {
+        return chatResponseService.update(chatResponseId, body)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/response/delete/{chatResponseId}")
+    public ResponseEntity<Void> deleteChatResponse(@PathVariable Long chatResponseId) {
+        return chatResponseService.deleteChatResponse(chatResponseId)
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.notFound().build();
     }
 
 }
