@@ -6,6 +6,9 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.orio.book_processing.book_management.services.chapter.ChapterService;
+import com.orio.book_processing.chat.services.IExplanationChatService;
+import com.orio.book_processing.chat.services.IQueryChatService;
+import com.orio.book_processing.chat.services.impl.ChatResponseService;
 import com.orio.book_processing.processing.chapter.exceptions.LLMGenerationException;
 import com.orio.book_processing.processing.ideas.extraction.models.dtos.response.SentenceDTO;
 

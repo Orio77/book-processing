@@ -1,4 +1,4 @@
-package com.orio.book_processing.chat;
+package com.orio.book_processing.chat.controllers;
 
 import java.util.List;
 
@@ -9,6 +9,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.orio.book_processing.chat.ChatWorkflowService;
+import com.orio.book_processing.chat.controllers.dtos.PDFChatRequest;
+import com.orio.book_processing.chat.controllers.dtos.PDFChatResponse;
+import com.orio.book_processing.chat.services.impl.ChatResponseService;
 
 import lombok.RequiredArgsConstructor;
 

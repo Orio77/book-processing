@@ -1,9 +1,10 @@
-package com.orio.book_processing.chat;
+package com.orio.book_processing.chat.services.impl;
 
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.stereotype.Service;
 
+import com.orio.book_processing.chat.services.IExplanationChatService;
 import com.orio.book_processing.processing.chapter.exceptions.LLMGenerationException;
 
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package com.orio.book_processing.chat;
+package com.orio.book_processing.chat.services;
 
 import com.orio.book_processing.processing.chapter.exceptions.LLMGenerationException;
 

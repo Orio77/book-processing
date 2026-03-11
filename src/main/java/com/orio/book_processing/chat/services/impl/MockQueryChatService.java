@@ -1,8 +1,9 @@
-package com.orio.book_processing.chat;
+package com.orio.book_processing.chat.services.impl;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
+import com.orio.book_processing.chat.services.IQueryChatService;
 import com.orio.book_processing.processing.chapter.exceptions.LLMGenerationException;
 
 import lombok.RequiredArgsConstructor;

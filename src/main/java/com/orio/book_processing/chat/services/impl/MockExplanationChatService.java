@@ -1,8 +1,10 @@
-package com.orio.book_processing.chat;
+package com.orio.book_processing.chat.services.impl;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+
+import com.orio.book_processing.chat.services.IExplanationChatService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

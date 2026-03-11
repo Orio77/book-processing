@@ -1,4 +1,4 @@
-package com.orio.book_processing.chat;
+package com.orio.book_processing.chat.models;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
