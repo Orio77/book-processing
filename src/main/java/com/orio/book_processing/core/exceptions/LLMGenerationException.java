@@ -1,4 +1,4 @@
-package com.orio.book_processing.processing.chapter.exceptions;
+package com.orio.book_processing.core.exceptions;
 
 public class LLMGenerationException extends Exception {
 

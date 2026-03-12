@@ -1,3 +1,4 @@
+.github/
 HELP.md
 target/
 .mvn/wrapper/maven-wrapper.jar
@@ -35,3 +36,4 @@ launch.json
 
 *.properties
 logs/
+src/main/resources/analysis

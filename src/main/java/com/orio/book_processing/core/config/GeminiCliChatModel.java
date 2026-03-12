@@ -1,4 +1,4 @@
-package com.orio.book_processing.config;
+package com.orio.book_processing.core.config;
 
 import java.io.IOException;
 import java.io.InputStream;

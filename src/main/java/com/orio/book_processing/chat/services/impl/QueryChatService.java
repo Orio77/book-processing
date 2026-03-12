@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import com.orio.book_processing.chat.services.IQueryChatService;
-import com.orio.book_processing.processing.chapter.exceptions.LLMGenerationException;
+import com.orio.book_processing.core.exceptions.LLMGenerationException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

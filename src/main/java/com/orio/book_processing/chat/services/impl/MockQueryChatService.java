@@ -3,7 +3,7 @@ package com.orio.book_processing.chat.services.impl;
 import org.springframework.stereotype.Service;
 
 import com.orio.book_processing.chat.services.IQueryChatService;
-import com.orio.book_processing.processing.chapter.exceptions.LLMGenerationException;
+import com.orio.book_processing.core.exceptions.LLMGenerationException;
 
 import lombok.RequiredArgsConstructor;
 

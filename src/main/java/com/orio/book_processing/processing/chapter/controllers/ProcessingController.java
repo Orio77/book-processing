@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.orio.book_processing.core.exceptions.LLMGenerationException;
 import com.orio.book_processing.processing.chapter.ChapterSummaryWorkflow;
 import com.orio.book_processing.processing.chapter.dtos.ChapterSummaryResponse;
-import com.orio.book_processing.processing.chapter.exceptions.LLMGenerationException;
 import com.orio.book_processing.processing.chapter.services.ChapterSummaryService;
 
 import jakarta.persistence.EntityNotFoundException;

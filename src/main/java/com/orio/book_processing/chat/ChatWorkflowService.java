@@ -9,7 +9,7 @@ import com.orio.book_processing.book_management.services.chapter.ChapterService;
 import com.orio.book_processing.chat.services.IExplanationChatService;
 import com.orio.book_processing.chat.services.IQueryChatService;
 import com.orio.book_processing.chat.services.impl.ChatResponseService;
-import com.orio.book_processing.processing.chapter.exceptions.LLMGenerationException;
+import com.orio.book_processing.core.exceptions.LLMGenerationException;
 import com.orio.book_processing.processing.ideas.extraction.models.dtos.response.SentenceDTO;
 
 import lombok.RequiredArgsConstructor;

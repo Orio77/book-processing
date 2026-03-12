@@ -9,7 +9,7 @@ import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.stereotype.Service;
 
-import com.orio.book_processing.processing.chapter.exceptions.LLMGenerationException;
+import com.orio.book_processing.core.exceptions.LLMGenerationException;
 
 import lombok.RequiredArgsConstructor;
 

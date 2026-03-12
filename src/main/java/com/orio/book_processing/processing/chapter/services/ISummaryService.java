@@ -1,6 +1,6 @@
 package com.orio.book_processing.processing.chapter.services;
 
-import com.orio.book_processing.processing.chapter.exceptions.LLMGenerationException;
+import com.orio.book_processing.core.exceptions.LLMGenerationException;
 
 public interface ISummaryService {
 

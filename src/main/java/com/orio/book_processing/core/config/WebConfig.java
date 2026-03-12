@@ -1,4 +1,4 @@
-package com.orio.book_processing.config;
+package com.orio.book_processing.core.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
