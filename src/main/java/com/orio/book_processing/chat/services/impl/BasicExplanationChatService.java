@@ -2,6 +2,7 @@ package com.orio.book_processing.chat.services.impl;
 
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import com.orio.book_processing.chat.services.IExplanationChatService;
@@ -12,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
+@Primary
 @RequiredArgsConstructor
 public class BasicExplanationChatService implements IExplanationChatService {
 

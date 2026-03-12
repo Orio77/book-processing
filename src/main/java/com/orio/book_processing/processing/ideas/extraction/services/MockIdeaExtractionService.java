@@ -7,7 +7,6 @@ import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.model.Generation;
 import org.springframework.ai.converter.BeanOutputConverter;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Primary;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-@Primary
 @RequiredArgsConstructor
 public class MockIdeaExtractionService implements IIdeaExtractionService {
 
