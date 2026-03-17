@@ -41,7 +41,7 @@ public class IdeaController {
     }
 
     @GetMapping("/get/all/{chapterId}")
-    public ResponseEntity<List<IdeaWithSentences>> getAllIdeasBychapterId(@PathVariable Long chapterId) {
+    public ResponseEntity<List<IdeaWithSentences>> getAllIdeasByChapterId(@PathVariable Long chapterId) {
         return ideaService.getIdeasByChapter(chapterId).map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

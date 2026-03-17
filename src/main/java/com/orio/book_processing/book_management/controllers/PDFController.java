@@ -27,7 +27,7 @@ import com.orio.book_processing.book_management.models.Sentence;
 import com.orio.book_processing.book_management.services.chapter.ChapterService;
 import com.orio.book_processing.book_management.services.pdf.PDFService;
 import com.orio.book_processing.book_management.services.sentence.SentenceService;
-import com.orio.book_processing.book_management.services.upload.IUploadService;
+import com.orio.book_processing.book_management.services.upload.UploadService;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +37,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PDFController {
 
-    private final IUploadService uploadService;
+    private final UploadService uploadService;
     private final PDFService pdfService;
     private final ChapterService chapterService;
     private final SentenceService sentenceService;
@@ -75,7 +75,7 @@ public class PDFController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Boolean> deletepdf(@PathVariable Long id) {
+    public ResponseEntity<Boolean> deletePdf(@PathVariable Long id) {
 
         boolean isDeleted = pdfService.deletePDF(id);
         if (isDeleted) {

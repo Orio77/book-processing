@@ -2,7 +2,7 @@ package com.orio.book_processing.processing.ideas.extraction.models.dtos.respons
 
 import com.orio.book_processing.processing.ideas.extraction.models.Idea;
 
-public record IdeaDTO(Long ideaId, String ideaTitle) {
+public record IdeaDTO(Long id, String title) {
 
     public static IdeaDTO from(Idea idea) {
         return new IdeaDTO(idea.getId(), idea.getTitle());

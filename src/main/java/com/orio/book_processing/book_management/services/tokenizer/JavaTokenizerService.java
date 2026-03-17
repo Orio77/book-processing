@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class JavaTokenizerService implements ITokenizer {
+public class JavaTokenizerService implements Tokenizer {
 
     @Override
     public List<String> tokenize(String str) {

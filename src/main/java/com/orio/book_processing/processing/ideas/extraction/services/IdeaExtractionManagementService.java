@@ -29,7 +29,7 @@ public class IdeaExtractionManagementService {
     private final SentenceService sentenceService;
     private final IdeaRepository ideaRepo;
 
-    private final IdeaExtractionService extractionService;
+    private final BasicIdeaExtractionService extractionService;
 
     @Transactional
     public IdeaExtractionAiResponse extractIdeas(Long chapterId) {

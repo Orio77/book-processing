@@ -109,6 +109,11 @@ public class ChatResponseService {
         }
     }
 
+    /**
+     * 
+     * @param chatResponseId
+     * @return true on successful deletion and false on fail
+     */
     @Transactional
     public boolean deleteChatResponse(Long chatResponseId) {
         log.info("Deleting ChatResponse {}...", chatResponseId);

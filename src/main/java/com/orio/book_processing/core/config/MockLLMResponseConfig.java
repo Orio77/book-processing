@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 public class MockLLMResponseConfig {
 
     @Bean(name = "extractedIdeas")
-    public String extractedIdeasAiResponse() {
+    public String extractedIdeas() {
         return """
                 {
                     "ideaContainers": [
@@ -351,7 +351,7 @@ public class MockLLMResponseConfig {
     }
 
     @Bean(name = "explanationChatResponse")
-    public String getExplanationAIChatResponse() {
+    public String explanationAIChatResponse() {
         return """
                 Here is a **clear, thorough, plain‑English explanation** of the fragment you quoted — *specifically the part your reader didn’t understand* — and how it fits into the logic of the chapter.
 
@@ -531,7 +531,7 @@ public class MockLLMResponseConfig {
     }
 
     @Bean(name = "queryChatResponse")
-    public String getQueryChatResponse() {
+    public String queryChatResponse() {
         return """
                 Absolutely—yes. Many famous psychologists and philosophers have argued **exactly** what Peterson describes in that passage: the experience of *an observing part of yourself watching and evaluating the speaking/acting part*. This idea is actually one of the most influential themes in psychology, philosophy, and even contemplative traditions.
 

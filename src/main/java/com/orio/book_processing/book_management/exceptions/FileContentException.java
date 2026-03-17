@@ -4,11 +4,11 @@ import java.io.IOException;
 
 public class FileContentException extends IOException {
 
-    public FileContentException(String arg0) {
-        super(arg0);
+    public FileContentException(String message) {
+        super(message);
     }
 
-    public FileContentException(String arg0, Throwable arg1) {
-        super(arg0, arg1);
+    public FileContentException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

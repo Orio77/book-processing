@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class MockIdeaExtractionService implements IIdeaExtractionService {
+public class MockIdeaExtractionService implements IdeaExtractionService {
 
     @Qualifier("extractedIdeas")
     private final String extractedIdeas;
@@ -29,7 +29,7 @@ public class MockIdeaExtractionService implements IIdeaExtractionService {
         log.info("Mocking LLM response for {} sentences", sentences.size());
 
         // prepare output converter
-        BeanOutputConverter<IdeaExtractionAiResponse> outConv = new BeanOutputConverter<>(
+        BeanOutputConverter<IdeaExtractionAiResponse> outputConverter = new BeanOutputConverter<>(
                 new ParameterizedTypeReference<IdeaExtractionAiResponse>() {
                 });
 
@@ -39,7 +39,7 @@ public class MockIdeaExtractionService implements IIdeaExtractionService {
 
         // convert output
         log.info("Converting the JSON response to objects...");
-        return outConv.convert(response.getResult().getOutput().getText());
+        return outputConverter.convert(response.getResult().getOutput().getText());
     }
 
     private ChatResponse mockChatResponse() {

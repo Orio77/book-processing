@@ -2,7 +2,7 @@ package com.orio.book_processing.book_management.services.tokenizer;
 
 import java.util.List;
 
-public interface ITokenizer {
+public interface Tokenizer {
 
     List<String> tokenize(String text);
 }

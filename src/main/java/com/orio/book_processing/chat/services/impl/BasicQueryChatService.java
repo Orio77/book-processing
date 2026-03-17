@@ -5,7 +5,7 @@ import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
-import com.orio.book_processing.chat.services.IQueryChatService;
+import com.orio.book_processing.chat.services.QueryChatService;
 import com.orio.book_processing.core.exceptions.LLMGenerationException;
 
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Primary
 @RequiredArgsConstructor
-public class QueryChatService implements IQueryChatService {
+public class BasicQueryChatService implements QueryChatService {
 
     private final ChatModel chatModel;
 
