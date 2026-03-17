@@ -6,11 +6,11 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.orio.book_processing.book_management.services.chapter.ChapterService;
+import com.orio.book_processing.chat.dtos.ChatContextSentenceDTO;
 import com.orio.book_processing.chat.services.IExplanationChatService;
 import com.orio.book_processing.chat.services.IQueryChatService;
 import com.orio.book_processing.chat.services.impl.ChatResponseService;
 import com.orio.book_processing.core.exceptions.LLMGenerationException;
-import com.orio.book_processing.processing.ideas.extraction.models.dtos.response.SentenceDTO;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +25,8 @@ public class ChatWorkflowService {
     private final ChapterService chapterService;
     private final ChatResponseService chatResponseService;
 
-    public String chat(List<SentenceDTO> context, String query, Long chapterId) throws LLMGenerationException {
+    public String chat(List<ChatContextSentenceDTO> context, String query, Long chapterId)
+            throws LLMGenerationException {
         log.info("Chat request received for chapter {}: {}\n", chapterId, query);
         String contextStr = getContext(context);
         String chapterText = chapterService.getChapter(chapterId).getText();
@@ -39,8 +40,8 @@ public class ChatWorkflowService {
         return response;
     }
 
-    private String getContext(List<SentenceDTO> context) {
-        return context.stream().map(SentenceDTO::sentenceContent).collect(Collectors.joining("\n"));
+    private String getContext(List<ChatContextSentenceDTO> context) {
+        return context.stream().map(ChatContextSentenceDTO::sentenceContent).collect(Collectors.joining("\n"));
     }
 
 }

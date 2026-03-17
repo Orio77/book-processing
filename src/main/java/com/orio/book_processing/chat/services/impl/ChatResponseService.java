@@ -8,12 +8,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.orio.book_processing.book_management.models.Sentence;
 import com.orio.book_processing.book_management.services.sentence.SentenceService;
+import com.orio.book_processing.chat.dtos.ChatContextSentenceDTO;
 import com.orio.book_processing.chat.dtos.PDFChatResponse;
 import com.orio.book_processing.chat.models.ChatResponse;
 import com.orio.book_processing.chat.models.ChatResponseContext;
 import com.orio.book_processing.chat.repositories.ChatResponseContextRepository;
 import com.orio.book_processing.chat.repositories.ChatResponseRepository;
-import com.orio.book_processing.processing.ideas.extraction.models.dtos.response.SentenceDTO;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +28,7 @@ public class ChatResponseService {
     private final ChatResponseContextRepository chatResponseContextRepo;
     private final SentenceService sentenceService;
 
-    public void save(Long chapterId, String query, String response, List<SentenceDTO> context) {
+    public void save(Long chapterId, String query, String response, List<ChatContextSentenceDTO> context) {
         log.debug("Saving ChatResponse for query: {}", query);
         // create ChatResponse obj
         ChatResponse chatResponse = new ChatResponse();
@@ -41,7 +41,7 @@ public class ChatResponseService {
         log.info("ChatResponse saved with id {}", savedResponse.getId());
 
         // parse Sentence objs
-        List<Long> sentenceIds = context.stream().map(SentenceDTO::sentenceId).toList();
+        List<Long> sentenceIds = context.stream().map(ChatContextSentenceDTO::sentenceId).toList();
         List<Sentence> sentences = sentenceService.getSentencesByIds(sentenceIds);
         log.info("Found {} sentence links to ChatResponse {}", sentences.size(), savedResponse.getId());
 

@@ -16,16 +16,17 @@ import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.model.Generation;
 import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@Primary
 @Component
 public class GeminiCliChatModel implements ChatModel {
 
     private static final long GEMINI_TIMEOUT_SECONDS = 120;
-    private static final String CREDENTIALS_PREFIX = "Loaded cached credentials.";
 
     @Override
     public ChatResponse call(Prompt prompt) {
@@ -36,7 +37,6 @@ public class GeminiCliChatModel implements ChatModel {
         }
 
         ProcessBuilder processBuilder = new ProcessBuilder(buildCommand());
-        processBuilder.redirectErrorStream(true);
 
         try {
             Process process = processBuilder.start();
@@ -109,11 +109,7 @@ public class GeminiCliChatModel implements ChatModel {
      * "Loaded cached credentials." — strip those and return only the model reply.
      */
     private String stripCliNoise(String output) {
-        String trimmed = output.strip();
-        if (trimmed.startsWith(CREDENTIALS_PREFIX)) {
-            trimmed = trimmed.substring(CREDENTIALS_PREFIX.length()).strip();
-        }
-        return trimmed;
+        return output.substring(output.indexOf("{"), output.lastIndexOf("}") + 1);
     }
 
     // --- command building ---
