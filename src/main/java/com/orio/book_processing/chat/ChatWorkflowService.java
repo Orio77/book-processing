@@ -27,7 +27,7 @@ public class ChatWorkflowService {
 
     public String chat(List<ChatContextSentenceDTO> context, String query, Long chapterId)
             throws LLMGenerationException {
-        log.info("Chat request received for chapter {}: {}\n", chapterId, query);
+        log.info("Chat request received for chapter {}: {}", chapterId, query);
         String contextText = getContext(context);
         String chapterText = chapterService.getChapter(chapterId).getText();
 
@@ -41,7 +41,7 @@ public class ChatWorkflowService {
     }
 
     private String getContext(List<ChatContextSentenceDTO> context) {
-        return context.stream().map(ChatContextSentenceDTO::sentenceContent).collect(Collectors.joining("\n"));
+        return context.stream().map(ChatContextSentenceDTO::sentenceContent).collect(Collectors.joining(""));
     }
 
 }

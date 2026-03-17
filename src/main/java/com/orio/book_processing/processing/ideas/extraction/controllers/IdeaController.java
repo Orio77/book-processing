@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.orio.book_processing.processing.ideas.extraction.dtos.IdeaArgumentDTO;
 import com.orio.book_processing.processing.ideas.extraction.models.IdeaExtractionAiResponse;
-import com.orio.book_processing.processing.ideas.extraction.models.dtos.response.IdeaArgumentDTO;
-import com.orio.book_processing.processing.ideas.extraction.models.dtos.response.IdeaWithSentences;
+import com.orio.book_processing.processing.ideas.extraction.dtos.IdeaWithSentences;
 import com.orio.book_processing.processing.ideas.extraction.services.IdeaExtractionManagementService;
-import com.orio.book_processing.processing.ideas.extraction.services.model_wrappers.IdeaArgumentService;
-import com.orio.book_processing.processing.ideas.extraction.services.model_wrappers.IdeaService;
+import com.orio.book_processing.processing.ideas.extraction.services.wrappers.IdeaArgumentService;
+import com.orio.book_processing.processing.ideas.extraction.services.wrappers.IdeaService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -47,7 +47,7 @@ public class BasicQueryChatService implements QueryChatService {
                     .getOutput()
                     .getText();
         } catch (NullPointerException e) {
-            log.error("Response from the LLM was null");
+            log.error("LLM call failed with NullPointerException", e);
             throw new LLMGenerationException(e.getMessage(), e.getCause());
         }
     }

@@ -52,7 +52,7 @@ public class ChapterService {
             }
         }
 
-        log.error("Couldn't find page {} in chapter ranges: {}", pageIndex, chapterPageRanges);
+        log.warn("Couldn't find page {} in chapter ranges: {}", pageIndex, chapterPageRanges);
         // When page isn't placed within any of chapter page ranges
         throw new IllegalArgumentException("Invalid page range");
     }

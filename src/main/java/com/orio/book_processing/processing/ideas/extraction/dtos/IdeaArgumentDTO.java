@@ -1,4 +1,4 @@
-package com.orio.book_processing.processing.ideas.extraction.models.dtos.response;
+package com.orio.book_processing.processing.ideas.extraction.dtos;
 
 import com.orio.book_processing.processing.ideas.extraction.models.IdeaArgument;
 

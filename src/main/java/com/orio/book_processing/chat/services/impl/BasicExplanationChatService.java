@@ -1,6 +1,4 @@
 
-
-
 package com.orio.book_processing.chat.services.impl;
 
 import org.springframework.ai.chat.model.ChatModel;
@@ -49,7 +47,7 @@ public class BasicExplanationChatService implements ExplanationChatService {
                     .getOutput()
                     .getText();
         } catch (NullPointerException e) {
-            log.error("Received response from the LLM was null");
+            log.error("LLM call failed with NullPointerException", e);
             throw new LLMGenerationException(e.getMessage(), e.getCause());
         }
     }

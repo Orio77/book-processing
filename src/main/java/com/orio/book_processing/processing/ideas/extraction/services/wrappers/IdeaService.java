@@ -1,4 +1,4 @@
-package com.orio.book_processing.processing.ideas.extraction.services.model_wrappers;
+package com.orio.book_processing.processing.ideas.extraction.services.wrappers;
 
 import java.util.List;
 import java.util.Map;
@@ -11,11 +11,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.orio.book_processing.book_management.models.Chapter;
 import com.orio.book_processing.book_management.models.Sentence;
 import com.orio.book_processing.book_management.services.chapter.ChapterService;
+import com.orio.book_processing.processing.ideas.extraction.dtos.IdeaDTO;
+import com.orio.book_processing.processing.ideas.extraction.dtos.IdeaWithSentences;
+import com.orio.book_processing.processing.ideas.extraction.dtos.SentenceDTO;
 import com.orio.book_processing.processing.ideas.extraction.models.Idea;
 import com.orio.book_processing.processing.ideas.extraction.models.IdeaSentence;
-import com.orio.book_processing.processing.ideas.extraction.models.dtos.response.IdeaDTO;
-import com.orio.book_processing.processing.ideas.extraction.models.dtos.response.IdeaWithSentences;
-import com.orio.book_processing.processing.ideas.extraction.models.dtos.response.SentenceDTO;
 import com.orio.book_processing.processing.ideas.extraction.repositories.IdeaRepository;
 import com.orio.book_processing.processing.ideas.extraction.repositories.IdeaSentenceRepository;
 

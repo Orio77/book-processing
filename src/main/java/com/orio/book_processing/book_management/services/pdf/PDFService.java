@@ -39,9 +39,9 @@ public class PDFService {
     }
 
     public PDF savePDF(PDF pdf) {
-        log.info("Saving {}...", pdf.getTitle());
+        log.info("Saving pdf {}...", pdf.getTitle());
         PDF savedPDF = pdfRepo.saveAndFlush(pdf);
-        log.info("Saved {} with id: {}", pdf.getTitle(), pdf.getId());
+        log.info("Saved pdf {} with id: {}", pdf.getTitle(), pdf.getId());
         return savedPDF;
     }
 
@@ -57,10 +57,13 @@ public class PDFService {
 
     @Transactional
     public boolean deletePDF(Long id) {
+        log.info("Deleting PDF {}...", id);
         if (!pdfRepo.existsById(id)) {
+            log.warn("PDf with id {} doesn't exist, returning.", id);
             return false;
         }
         pdfRepo.deleteById(id);
+        log.info("PDF with id {} deleted successfully.", id);
         return true;
     }
 

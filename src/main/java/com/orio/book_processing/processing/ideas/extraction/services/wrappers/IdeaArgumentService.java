@@ -1,4 +1,4 @@
-package com.orio.book_processing.processing.ideas.extraction.services.model_wrappers;
+package com.orio.book_processing.processing.ideas.extraction.services.wrappers;
 
 import java.util.List;
 import java.util.Optional;
@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.orio.book_processing.processing.ideas.extraction.models.IdeaArgument;
-import com.orio.book_processing.processing.ideas.extraction.models.dtos.response.IdeaArgumentDTO;
+import com.orio.book_processing.processing.ideas.extraction.dtos.IdeaArgumentDTO;
 import com.orio.book_processing.processing.ideas.extraction.repositories.IdeaArgumentRepository;
 
 import lombok.RequiredArgsConstructor;

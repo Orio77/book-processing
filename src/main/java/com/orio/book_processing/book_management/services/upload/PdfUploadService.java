@@ -22,7 +22,9 @@ import com.orio.book_processing.book_management.services.tokenizer.Tokenizer;
 
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PdfUploadService implements UploadService {
@@ -38,24 +40,33 @@ public class PdfUploadService implements UploadService {
     public Long upload(MultipartFile file, List<PageRange> chapterPageRanges)
             throws PDFLoadingException, FileContentException {
 
+        log.info("Uploading a pdf...");
         // Read file bytes
         byte[] fileBytes;
         try {
             fileBytes = file.getBytes();
         } catch (IOException e) {
+            log.warn("File bytes of the provided pdf are corrupted, stopping...");
             throw new FileContentException(e.getMessage(), e.getCause());
         }
+
+        log.info("Pdf bytes read successfully");
 
         // proceed with upload logic
         try (PDDocument doc = Loader.loadPDF(fileBytes)) {
             PDF resPdf = pdfService.createPDF(doc, file, fileBytes);
+            log.info("PDF object created successfully: {}", resPdf.getTitle());
             resPdf = pdfService.savePDF(resPdf);
+
+            log.info("Creating chapters...");
 
             List<Chapter> chapters = chapterService.createChapters(resPdf, chapterPageRanges);
             chapterService.saveChapters(chapters);
+            log.info("Saved {} chapters", chapters.size());
 
             PDFTextStripper stripper = new PDFTextStripper();
 
+            log.info("Creating sentences...");
             for (int i = 1; i <= doc.getNumberOfPages(); i++) {
                 stripper.setStartPage(i);
                 stripper.setEndPage(i);
@@ -67,10 +78,14 @@ public class PdfUploadService implements UploadService {
                 List<String> strSentences = tokenizer.tokenize(pageContent);
                 List<Sentence> sentences = sentenceService.createSentences(strSentences, resPdf, chapter, i);
                 sentenceService.saveSentences(sentences);
+                log.debug("{} sentences for page {} created successfully", sentences.size(), i);
             }
+
+            log.info("All sentences for {} pages created successfully", doc.getNumberOfPages());
             return resPdf.getId();
 
         } catch (IOException e) {
+            log.warn("Exception while uploading a PDF, stopping...");
             throw new PDFLoadingException(e.getMessage(), e.getCause());
         }
 

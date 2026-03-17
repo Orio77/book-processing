@@ -1,4 +1,4 @@
-package com.orio.book_processing.processing.ideas.extraction.services.model_wrappers;
+package com.orio.book_processing.processing.ideas.extraction.services.wrappers;
 
 import java.util.List;
 

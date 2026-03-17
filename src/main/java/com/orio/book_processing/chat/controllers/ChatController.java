@@ -34,7 +34,7 @@ public class ChatController {
                     chatRequest.chapterId());
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("LLM service returned a null response");
+            return ResponseEntity.internalServerError().body("Chat request failed: " + e.getMessage());
         }
     }
 
@@ -46,7 +46,7 @@ public class ChatController {
                     explanationRequest.chapterId());
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("LLM service returned a null response");
+            return ResponseEntity.internalServerError().body("Chat request failed: " + e.getMessage());
         }
     }
 

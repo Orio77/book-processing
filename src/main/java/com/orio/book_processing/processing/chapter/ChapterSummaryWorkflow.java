@@ -25,12 +25,12 @@ public class ChapterSummaryWorkflow {
         // Get the chapter
         log.info("Parsing chapter from the database...");
         Chapter chapter = chapterService.getChapter(chapterId);
-        log.info("Retrieved chapter {} from the database", chapter.getId());
+        log.info("Retrieved chapter {} from the database", chapterId);
 
         // Create a summary
-        log.info("Generating summary for chapter {}...", chapter.getId());
+        log.info("Generating summary for chapter {}...", chapterId);
         String summary = summaryService.generateChapterSummary(chapter.getText());
-        log.info("Summary for chapter {} generated.");
+        log.info("Summary for chapter {} generated.", chapterId);
 
         // Convert summary text to an object
         ChapterSummary chapterSummary = new ChapterSummary();

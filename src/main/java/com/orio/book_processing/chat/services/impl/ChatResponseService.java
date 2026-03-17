@@ -93,7 +93,7 @@ public class ChatResponseService {
                     .map(ctx -> ctx.getSentence().getId()).toList();
 
             if (chatResponseContextSentenceIds.isEmpty()) {
-                log.error("No sentences linked to ChatResponse {} were found", chatResponseId);
+                log.warn("No sentences linked to ChatResponse {} were found", chatResponseId);
                 return Optional.empty();
             }
 
@@ -104,7 +104,7 @@ public class ChatResponseService {
 
             return Optional.of(pdfChatResponse);
         } catch (EntityNotFoundException e) {
-            log.error("ChatResponse with id {} not found", chatResponseId);
+            log.warn("ChatResponse with id {} not found", chatResponseId);
             return Optional.empty();
         }
     }
@@ -118,7 +118,7 @@ public class ChatResponseService {
     public boolean deleteChatResponse(Long chatResponseId) {
         log.info("Deleting ChatResponse {}...", chatResponseId);
         if (!chatResponseRepo.existsById(chatResponseId)) {
-            log.error("Deletion of ChatResponse {} failed - not found", chatResponseId);
+            log.warn("Deletion of ChatResponse {} failed - not found", chatResponseId);
             return false;
         }
 
