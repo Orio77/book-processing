@@ -47,26 +47,29 @@ public class BasicIdeaExtractionService implements IdeaExtractionService {
                 %s
             """;
 
+    /**
+     * Extracts ideas from a list of sentences by calling an AI model and converting
+     * its JSON response
+     * into an {@link IdeaExtractionAiResponse} instance.
+     *
+     * @param sentences the sentences to extract ideas from
+     * @return the extracted ideas wrapped in an {@link IdeaExtractionAiResponse}
+     */
     @Override
     public IdeaExtractionAiResponse getIdeas(List<Sentence> sentences) {
         log.info("Extracting ideas from {} sentences...", sentences.size());
-        // prepare chapter text
         String chapterText = sentences.toString();
 
-        // prepare output converter
         BeanOutputConverter<IdeaExtractionAiResponse> outputConverter = new BeanOutputConverter<>(
                 new ParameterizedTypeReference<IdeaExtractionAiResponse>() {
                 });
 
-        // prepare prompt
         Prompt prompt = new Prompt(EXTRACTION_PROMPT.formatted(chapterText, outputConverter.getFormat()));
         log.debug("Calling model with extraction prompt: \n\n{}\n\n", prompt.toString());
 
-        // call LLM
         ChatResponse response = chatModel.call(prompt);
         log.debug("Response received: \n\n{}\n\n", response.getResult().getOutput().getText());
 
-        // convert output
         log.info("Converting the JSON response to objects...");
         return outputConverter.convert(response.getResult().getOutput().getText());
     }

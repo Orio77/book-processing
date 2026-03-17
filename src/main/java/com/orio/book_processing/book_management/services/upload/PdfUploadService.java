@@ -41,7 +41,6 @@ public class PdfUploadService implements UploadService {
             throws PDFLoadingException, FileContentException {
 
         log.info("Uploading a pdf...");
-        // Read file bytes
         byte[] fileBytes;
         try {
             fileBytes = file.getBytes();
@@ -52,7 +51,7 @@ public class PdfUploadService implements UploadService {
 
         log.info("Pdf bytes read successfully");
 
-        // proceed with upload logic
+        // Parse the PDF, create chapter + sentence entities, and persist everything
         try (PDDocument doc = Loader.loadPDF(fileBytes)) {
             PDF resPdf = pdfService.createPDF(doc, file, fileBytes);
             log.info("PDF object created successfully: {}", resPdf.getTitle());

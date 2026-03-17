@@ -2,6 +2,9 @@ package com.orio.book_processing.book_management.dtos.response;
 
 import com.orio.book_processing.book_management.models.Sentence;
 
+/**
+ * API response representing a parsed sentence.
+ */
 public record SentenceResponse(Long id, String content, int sentenceIndex, Long pdfId, Long chapterId) {
 
     public static SentenceResponse from(Sentence sentence) {

@@ -7,6 +7,9 @@ import org.springframework.stereotype.Repository;
 
 import com.orio.book_processing.processing.ideas.extraction.models.IdeaSentence;
 
+/**
+ * Repository for idea-to-sentence relationship entities.
+ */
 @Repository
 public interface IdeaSentenceRepository extends JpaRepository<IdeaSentence, IdeaSentence.IdeaSentenceId> {
 

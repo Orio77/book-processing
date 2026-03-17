@@ -7,6 +7,9 @@ import org.springframework.stereotype.Repository;
 
 import com.orio.book_processing.book_management.models.Chapter;
 
+/**
+ * Repository for chapter entities extracted from PDFs.
+ */
 @Repository
 public interface ChapterRepository extends JpaRepository<Chapter, Long> {
 

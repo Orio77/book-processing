@@ -21,6 +21,10 @@ import com.orio.book_processing.processing.ideas.extraction.services.wrappers.Id
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * REST endpoints for extracting ideas from chapter sentences and managing
+ * extracted ideas and arguments.
+ */
 @Slf4j
 @RestController
 @RequiredArgsConstructor

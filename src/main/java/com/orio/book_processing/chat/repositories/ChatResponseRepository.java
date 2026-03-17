@@ -7,6 +7,9 @@ import org.springframework.stereotype.Repository;
 
 import com.orio.book_processing.chat.models.ChatResponse;
 
+/**
+ * Repository for persisted chat responses.
+ */
 @Repository
 public interface ChatResponseRepository extends JpaRepository<ChatResponse, Long> {
 

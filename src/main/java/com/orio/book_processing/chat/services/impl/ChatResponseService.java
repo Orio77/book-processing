@@ -30,22 +30,21 @@ public class ChatResponseService {
 
     public void save(Long chapterId, String query, String response, List<ChatContextSentenceDTO> context) {
         log.debug("Saving ChatResponse for query: {}", query);
-        // create ChatResponse obj
         ChatResponse chatResponse = new ChatResponse();
         chatResponse.setChapterId(chapterId);
         chatResponse.setQuery(query);
         chatResponse.setContent(response);
 
-        // save ChatResponse obj
         ChatResponse savedResponse = chatResponseRepo.saveAndFlush(chatResponse);
         log.info("ChatResponse saved with id {}", savedResponse.getId());
 
-        // parse Sentence objs
+        // Resolve sentence entities from DTO IDs
         List<Long> sentenceIds = context.stream().map(ChatContextSentenceDTO::sentenceId).toList();
         List<Sentence> sentences = sentenceService.getSentencesByIds(sentenceIds);
         log.info("Found {} sentence links to ChatResponse {}", sentences.size(), savedResponse.getId());
 
-        // save response <-> sentence links
+        // Persist the many-to-many association between the chat response and its
+        // context sentences
         List<ChatResponseContext> chatResponseContexts = sentences.stream().map(sentence -> {
             ChatResponseContext chatResponseContext = new ChatResponseContext();
             chatResponseContext.setChatResponse(savedResponse);
@@ -78,16 +77,11 @@ public class ChatResponseService {
     public Optional<PDFChatResponse> update(Long chatResponseId, String newChatResponseBody) {
         log.info("Updating ChatResponse {}", chatResponseId);
         try {
-            // Get ChatResponse from the db
             ChatResponse chatResponse = chatResponseRepo.getReferenceById(chatResponseId);
-            // Change ChatResponse content
             chatResponse.setContent(newChatResponseBody);
-            // Save new ChatResponse
             ChatResponse savedChatResponse = chatResponseRepo.saveAndFlush(chatResponse);
 
-            // Create a Response Object
-
-            // Get linked to ChatResponse Sentences
+            // Fetch sentence IDs linked to this chat response for the DTO
             List<Long> chatResponseContextSentenceIds = chatResponseContextRepo.findByChatResponse(savedChatResponse)
                     .stream()
                     .map(ctx -> ctx.getSentence().getId()).toList();

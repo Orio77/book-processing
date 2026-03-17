@@ -19,6 +19,10 @@ import com.orio.book_processing.chat.services.impl.ChatResponseService;
 
 import lombok.RequiredArgsConstructor;
 
+/**
+ * REST endpoints for creating, retrieving, updating, and deleting chapter chat
+ * interactions.
+ */
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/pdf/chat")

@@ -5,6 +5,9 @@ import org.springframework.stereotype.Repository;
 
 import com.orio.book_processing.book_management.models.PDF;
 
+/**
+ * Repository for PDF entities.
+ */
 @Repository
 public interface PDFRepository extends JpaRepository<PDF, Long> {
 

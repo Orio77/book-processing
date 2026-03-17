@@ -19,6 +19,10 @@ import com.orio.book_processing.processing.chapter.services.ChapterSummaryServic
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * REST endpoints for chapter processing operations such as summary generation
+ * and retrieval.
+ */
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/pdf/process")

@@ -15,6 +15,10 @@ import com.orio.book_processing.core.exceptions.LLMGenerationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Coordinates PDF chat flows by selecting query or explanation generation,
+ * resolving chapter/context text, and persisting chat responses.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -31,6 +35,8 @@ public class ChatWorkflowService {
         String contextText = getContext(context);
         String chapterText = chapterService.getChapter(chapterId).getText();
 
+        // Null or blank query triggers "explain" mode; otherwise treat as a user
+        // question.
         String response = !(query == null || query.isBlank())
                 ? queryChatService.generateChatResponse(contextText, query, chapterText)
                 : explanationChatService.generateChatResponse(contextText, chapterText);

@@ -3,6 +3,10 @@ package com.orio.book_processing.core.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * Provides development/test mock LLM payload beans used when running the app
+ * without live model calls.
+ */
 @Configuration
 public class MockLLMResponseConfig {
 

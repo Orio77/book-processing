@@ -7,6 +7,9 @@ import org.springframework.stereotype.Repository;
 
 import com.orio.book_processing.book_management.models.Sentence;
 
+/**
+ * Repository for sentence entities parsed from PDFs.
+ */
 @Repository
 public interface SentenceRepository extends JpaRepository<Sentence, Long> {
 

@@ -32,6 +32,10 @@ import com.orio.book_processing.book_management.services.upload.UploadService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * REST endpoints for uploading PDFs and querying PDF, chapter, and sentence
+ * data.
+ */
 @RestController
 @RequestMapping("/api/pdf")
 @RequiredArgsConstructor

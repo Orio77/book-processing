@@ -22,7 +22,7 @@ public class IdeaArgumentService {
     public Optional<List<IdeaArgumentDTO>> getIdeaArgumentsForIdea(Long ideaId) {
         log.info("Fetching arguments for idea {}...", ideaId);
         List<IdeaArgument> args = ideaArgumentRepo.findAllByIdea_Id(ideaId);
-        log.info("Found {} argumetns for idea {}", args.size(), ideaId);
+        log.info("Found {} arguments for idea {}", args.size(), ideaId);
 
         // convert arguments to DTOs
         return Optional.of(args.stream().map(arg -> new IdeaArgumentDTO(arg.getId(), arg.getText())).toList());

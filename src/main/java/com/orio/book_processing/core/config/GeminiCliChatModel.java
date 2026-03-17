@@ -21,6 +21,10 @@ import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Spring AI {@link ChatModel} implementation that delegates generation to the
+ * Gemini CLI process and converts the CLI output into a chat response.
+ */
 @Slf4j
 @Primary
 @Component
@@ -117,6 +121,8 @@ public class GeminiCliChatModel implements ChatModel {
     private List<String> buildCommand() {
         String executable = resolveGeminiExecutable();
         log.info("using gemini executable: {}", executable);
+        // -p flag is for a prompt, we leave it empty and inject text later as
+        // oftentimes it's too long to be fit into this command
         return List.of(executable, "-p", "", "--output-format", "text");
     }
 

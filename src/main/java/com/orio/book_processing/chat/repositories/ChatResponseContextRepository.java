@@ -8,6 +8,9 @@ import org.springframework.stereotype.Repository;
 import com.orio.book_processing.chat.models.ChatResponse;
 import com.orio.book_processing.chat.models.ChatResponseContext;
 
+/**
+ * Repository for associations between chat responses and context sentences.
+ */
 @Repository
 public interface ChatResponseContextRepository
         extends JpaRepository<ChatResponseContext, ChatResponseContext.ChatResponseContextId> {

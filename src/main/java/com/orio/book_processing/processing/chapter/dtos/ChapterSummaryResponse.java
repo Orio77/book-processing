@@ -2,6 +2,9 @@ package com.orio.book_processing.processing.chapter.dtos;
 
 import com.orio.book_processing.processing.chapter.models.ChapterSummary;
 
+/**
+ * API response representing a generated chapter summary.
+ */
 public record ChapterSummaryResponse(
         Long id,
         Long chapterId,

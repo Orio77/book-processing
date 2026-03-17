@@ -7,6 +7,9 @@ import org.springframework.stereotype.Repository;
 
 import com.orio.book_processing.processing.ideas.extraction.models.IdeaArgument;
 
+/**
+ * Repository for arguments that belong to extracted ideas.
+ */
 @Repository
 public interface IdeaArgumentRepository extends JpaRepository<IdeaArgument, Long> {
 

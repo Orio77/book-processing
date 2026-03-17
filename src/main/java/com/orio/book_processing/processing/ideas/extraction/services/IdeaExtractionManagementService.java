@@ -21,6 +21,10 @@ import com.orio.book_processing.processing.ideas.extraction.repositories.IdeaRep
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Coordinates idea extraction for a chapter by fetching sentences, invoking
+ * LLM extraction, and persisting ideas, arguments, and sentence links.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -37,11 +41,11 @@ public class IdeaExtractionManagementService {
         List<Sentence> sentences = sentenceService.getSentencesByChapterId(chapterId);
         log.info("Fetched {} sentences for chapter {}", sentences.size(), chapterId);
 
-        // group sentences by ids
+        // Index sentences by ID for O(1) lookup during idea–sentence linking
         Map<Long, Sentence> sentencesByIds = sentences.stream()
                 .collect(Collectors.toMap(Sentence::getId, sentence -> sentence));
 
-        log.info("Calling LLM for idea estraction...");
+        log.info("Calling LLM for idea extraction...");
         IdeaExtractionAiResponse extractionResponse = extractionService.getIdeas(sentences);
         log.info("LLM found {} ideas in chapter {}", extractionResponse.ideaContainers().size(), chapterId);
 
@@ -54,11 +58,9 @@ public class IdeaExtractionManagementService {
 
     private Consumer<? super IdeaRequest> saveIdeaContainer(Map<Long, Sentence> sentencesByIds) {
         return ideaContainer -> {
-            // create idea
             Idea idea = new Idea();
             idea.setTitle(ideaContainer.ideaTitle());
 
-            // create arguments
             List<IdeaArgument> ideaArguments = ideaContainer.arguments().stream().map(argText -> {
                 IdeaArgument argument = new IdeaArgument();
                 argument.setIdea(idea);
@@ -66,20 +68,20 @@ public class IdeaExtractionManagementService {
                 return argument;
             }).toList();
 
-            // link arguments to the idea
             idea.setArguments(ideaArguments);
 
-            // create a ling between idea and sentences it is contained in
+            // create a link between idea and sentences it is contained in
             List<IdeaSentence> ideaSentences = ideaContainer.ideaSentencesIds().stream().map(id -> {
                 IdeaSentence ideaSentence = new IdeaSentence();
                 ideaSentence.setIdea(idea);
                 ideaSentence.setSentence(sentencesByIds.getOrDefault(id, null));
                 return ideaSentence.getSentence() == null ? null : ideaSentence;
-            }).filter(Objects::nonNull).toList();
+            }).filter(Objects::nonNull).toList(); // LLM may return sentence IDs that don't exist in the database —
+                                                  // null entries are filtered out
 
             idea.setSentences(ideaSentences);
 
-            // cascade save
+            // Cascade-save idea with its arguments and sentence links
             ideaRepo.save(idea);
         };
     }
