@@ -70,6 +70,8 @@ public class IdeaService {
             return new IdeaWithSentences(IdeaDTO.from(idea), sentenceDtos);
         }).toList();
 
+        log.info("Found {} ideas.", ideasWithSentences.size());
+
         return Optional.of(ideasWithSentences);
     }
 
