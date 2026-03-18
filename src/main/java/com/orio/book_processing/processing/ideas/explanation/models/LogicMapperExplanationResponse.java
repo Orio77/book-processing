@@ -1,4 +1,4 @@
-package com.orio.book_processing.processing.ideas.explanation;
+package com.orio.book_processing.processing.ideas.explanation.models;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

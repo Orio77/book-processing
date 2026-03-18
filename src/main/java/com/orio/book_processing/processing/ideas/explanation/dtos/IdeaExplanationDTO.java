@@ -1,4 +1,4 @@
-package com.orio.book_processing.processing.ideas.explanation;
+package com.orio.book_processing.processing.ideas.explanation.dtos;
 
 import com.orio.book_processing.processing.ideas.extraction.models.Idea;
 

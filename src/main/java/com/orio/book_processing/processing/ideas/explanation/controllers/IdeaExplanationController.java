@@ -1,4 +1,4 @@
-package com.orio.book_processing.processing.ideas.explanation;
+package com.orio.book_processing.processing.ideas.explanation.controllers;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +13,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.orio.book_processing.processing.ideas.explanation.dtos.IdeaExplanationDTO;
+import com.orio.book_processing.processing.ideas.explanation.models.IdeaExplanation;
+import com.orio.book_processing.processing.ideas.explanation.services.IdeaExplanationService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

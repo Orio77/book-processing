@@ -1,4 +1,4 @@
-package com.orio.book_processing.processing.ideas.explanation;
+package com.orio.book_processing.processing.ideas.explanation.services;
 
 import java.util.List;
 
@@ -10,6 +10,8 @@ import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.converter.BeanOutputConverter;
 import org.springframework.stereotype.Service;
+
+import com.orio.book_processing.processing.ideas.explanation.models.LogicMapperExplanationResponse;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

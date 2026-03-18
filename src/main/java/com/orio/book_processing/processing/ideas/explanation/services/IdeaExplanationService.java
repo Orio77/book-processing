@@ -1,4 +1,4 @@
-package com.orio.book_processing.processing.ideas.explanation;
+package com.orio.book_processing.processing.ideas.explanation.services;
 
 import java.util.List;
 import java.util.Optional;
@@ -6,6 +6,8 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.orio.book_processing.processing.ideas.explanation.models.IdeaExplanation;
+import com.orio.book_processing.processing.ideas.explanation.repositories.IdeaExplanationRepository;
 import com.orio.book_processing.processing.ideas.extraction.models.Idea;
 import com.orio.book_processing.processing.ideas.extraction.models.IdeaArgument;
 import com.orio.book_processing.processing.ideas.extraction.repositories.IdeaRepository;
