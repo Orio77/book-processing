@@ -6,5 +6,5 @@ public interface JobHandler {
 
     boolean supports(JobType jobType);
 
-    void handle(String payload);
+    Long handle(String payload) throws Exception;
 }

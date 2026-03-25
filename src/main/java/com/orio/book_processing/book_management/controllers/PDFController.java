@@ -1,5 +1,6 @@
 package com.orio.book_processing.book_management.controllers;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -15,19 +16,20 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.orio.book_processing.book_management.dtos.request.PageRange;
+import com.orio.book_processing.book_management.dtos.request.PdfUploadDTO;
 import com.orio.book_processing.book_management.dtos.response.ChapterResponse;
 import com.orio.book_processing.book_management.dtos.response.PdfResponse;
 import com.orio.book_processing.book_management.dtos.response.SentenceResponse;
-import com.orio.book_processing.book_management.exceptions.FileContentException;
-import com.orio.book_processing.book_management.exceptions.PDFLoadingException;
 import com.orio.book_processing.book_management.models.Chapter;
 import com.orio.book_processing.book_management.models.PDF;
 import com.orio.book_processing.book_management.models.Sentence;
 import com.orio.book_processing.book_management.services.chapter.ChapterService;
 import com.orio.book_processing.book_management.services.pdf.PDFService;
 import com.orio.book_processing.book_management.services.sentence.SentenceService;
-import com.orio.book_processing.book_management.services.upload.UploadService;
+import com.orio.book_processing.queue.Job.JobType;
+import com.orio.book_processing.queue.JobDispatcher;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -41,23 +43,27 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PDFController {
 
-    private final UploadService uploadService;
     private final PDFService pdfService;
     private final ChapterService chapterService;
     private final SentenceService sentenceService;
 
+    private final JobDispatcher jobDispatcher;
+
     @PostMapping("/upload")
     public ResponseEntity<?> uploadPdf(@RequestPart("file") MultipartFile file,
             @RequestPart("chapterPageRanges") List<PageRange> chapterPageRanges) {
-        Long pdfId;
         try {
-            pdfId = uploadService.upload(file, chapterPageRanges);
-        } catch (FileContentException e) {
+            Long jobId = jobDispatcher.enqueue(JobType.PDF_UPLOAD, new PdfUploadDTO(
+                    file.getBytes(),
+                    file.getOriginalFilename(),
+                    file.getContentType(),
+                    chapterPageRanges));
+            return ResponseEntity.accepted().body(jobId);
+        } catch (JsonProcessingException e) {
+            return ResponseEntity.badRequest().body("Couldn't convert JSON to object");
+        } catch (IOException e) {
             return ResponseEntity.internalServerError().body("Failed to read file content: " + e.getMessage());
-        } catch (PDFLoadingException e) {
-            return ResponseEntity.internalServerError().body("Failed to load PDF: " + e.getMessage());
         }
-        return ResponseEntity.ok(pdfId);
     }
 
     @GetMapping("/get/{id}")
@@ -102,7 +108,6 @@ public class PDFController {
 
     @GetMapping("/chapter/get/all/{pdfId}")
     public ResponseEntity<List<ChapterResponse>> getAllChaptersByPdf(@PathVariable Long pdfId) {
-
         List<Chapter> chapters = chapterService.getAllChapters(pdfId);
 
         return chapters.isEmpty() ? ResponseEntity.noContent().build()

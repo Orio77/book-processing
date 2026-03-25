@@ -1,10 +1,13 @@
 package com.orio.book_processing.queue;
 
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import com.orio.book_processing.queue.Job.JobStatus;
+import com.orio.book_processing.queue.Job.JobType;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,21 +20,34 @@ public class JobWorkerService {
     private final List<JobHandler> handlers;
     private final JobRepository jobRepo;
 
-    public void processNextJob() {
+    public Job createJob(JobType jobType, String payload) {
+        Job job = new Job();
+        job.setType(jobType);
+        job.setPayload(payload);
+        job.setStatus(JobStatus.PENDING);
+
+        return jobRepo.saveAndFlush(job);
+    }
+
+    @EventListener
+    public void processNextJob(JobCreationEvent jobCreationEvent) {
         log.info("Looking for the next job...");
 
-        Job job = jobRepo.findFirstByStatus(JobStatus.PENDING);
-        if (job == null) {
+        Optional<Job> maybeJob = jobRepo.findById(jobCreationEvent.jobId());
+        if (!maybeJob.isPresent()) {
             return;
         }
+
+        Job job = maybeJob.get();
 
         log.info("Found next job of type {}.", job.getType().toString());
 
         handlers.stream().filter(h -> h.supports(job.getType())).findFirst().ifPresent(h -> {
             log.info("Found handler for the job {}.", h.toString());
             try {
-                h.handle(job.getPayload());
+                Long resultId = h.handle(job.getPayload());
                 job.setStatus(JobStatus.COMPLETED);
+                job.setResultId(resultId);
                 log.info("Job completed successfully.");
             } catch (Exception e) {
                 job.setStatus(JobStatus.FAILED);

@@ -26,8 +26,13 @@ public class Job {
     @Column(columnDefinition = "TEXT")
     private String payload;
 
+    @Column(columnDefinition = "TEXT")
+    private String errorText;
+
+    private Long resultId;
+
     public enum JobType {
-        PDF_UPLOAD, CHAPTER_SUMMARY, IDEA_EXTRACTION, IDEA_EXPLANATION
+        PDF_UPLOAD, CHAPTER_SUMMARY, CHAT, IDEA_EXTRACTION, IDEA_EXPLANATION
     }
 
     public enum JobStatus {
