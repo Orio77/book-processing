@@ -5,9 +5,9 @@ import org.springframework.stereotype.Service;
 import com.orio.book_processing.book_management.models.Chapter;
 import com.orio.book_processing.book_management.services.chapter.ChapterService;
 import com.orio.book_processing.core.exceptions.LLMGenerationException;
-import com.orio.book_processing.processing.chapter.models.ChapterSummary;
-import com.orio.book_processing.processing.chapter.services.ChapterSummaryService;
-import com.orio.book_processing.processing.chapter.services.ISummaryService;
+import com.orio.book_processing.processing.chapter.summary.models.ChapterSummary;
+import com.orio.book_processing.processing.chapter.summary.services.ISummaryService;
+import com.orio.book_processing.processing.chapter.summary.services.wrappers.ChapterSummaryService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

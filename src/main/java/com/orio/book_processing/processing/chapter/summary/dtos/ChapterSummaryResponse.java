@@ -1,6 +1,6 @@
-package com.orio.book_processing.processing.chapter.dtos;
+package com.orio.book_processing.processing.chapter.summary.dtos;
 
-import com.orio.book_processing.processing.chapter.models.ChapterSummary;
+import com.orio.book_processing.processing.chapter.summary.models.ChapterSummary;
 
 /**
  * API response representing a generated chapter summary.

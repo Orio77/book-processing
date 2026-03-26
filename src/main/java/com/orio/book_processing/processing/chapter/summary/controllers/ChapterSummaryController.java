@@ -1,4 +1,4 @@
-package com.orio.book_processing.processing.chapter.controllers;
+package com.orio.book_processing.processing.chapter.summary.controllers;
 
 import java.util.List;
 
@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.orio.book_processing.core.exceptions.LLMGenerationException;
 import com.orio.book_processing.processing.chapter.ChapterSummaryWorkflow;
-import com.orio.book_processing.processing.chapter.dtos.ChapterSummaryResponse;
-import com.orio.book_processing.processing.chapter.services.ChapterSummaryService;
+import com.orio.book_processing.processing.chapter.summary.dtos.ChapterSummaryResponse;
+import com.orio.book_processing.processing.chapter.summary.services.wrappers.ChapterSummaryService;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/pdf/process")
-public class ProcessingController {
+public class ChapterSummaryController {
 
     private final ChapterSummaryWorkflow chapterSummaryWorkflow;
     private final ChapterSummaryService chapterSummaryService;

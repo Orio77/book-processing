@@ -1,4 +1,4 @@
-package com.orio.book_processing.processing.chapter.repositories;
+package com.orio.book_processing.processing.chapter.summary.repositories;
 
 import java.util.List;
 import java.util.Optional;
@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.orio.book_processing.processing.chapter.models.ChapterSummary;
+import com.orio.book_processing.processing.chapter.summary.models.ChapterSummary;
 
 /**
  * Repository for chapter summary entities.

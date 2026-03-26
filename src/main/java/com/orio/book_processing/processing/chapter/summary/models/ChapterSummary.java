@@ -1,4 +1,4 @@
-package com.orio.book_processing.processing.chapter.models;
+package com.orio.book_processing.processing.chapter.summary.models;
 
 import com.orio.book_processing.book_management.models.Chapter;
 

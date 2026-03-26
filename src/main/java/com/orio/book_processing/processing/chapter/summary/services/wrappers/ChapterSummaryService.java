@@ -1,12 +1,12 @@
-package com.orio.book_processing.processing.chapter.services;
+package com.orio.book_processing.processing.chapter.summary.services.wrappers;
 
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.orio.book_processing.processing.chapter.models.ChapterSummary;
-import com.orio.book_processing.processing.chapter.repositories.ChapterSummaryRepository;
+import com.orio.book_processing.processing.chapter.summary.models.ChapterSummary;
+import com.orio.book_processing.processing.chapter.summary.repositories.ChapterSummaryRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,4 +1,4 @@
-package com.orio.book_processing.processing.chapter.services;
+package com.orio.book_processing.processing.chapter.summary.services;
 
 import java.util.Map;
 
