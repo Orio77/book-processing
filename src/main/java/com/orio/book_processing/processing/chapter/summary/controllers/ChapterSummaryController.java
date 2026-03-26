@@ -11,10 +11,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.orio.book_processing.core.exceptions.LLMGenerationException;
-import com.orio.book_processing.processing.chapter.ChapterSummaryWorkflow;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.orio.book_processing.processing.chapter.summary.dtos.ChapterSummaryResponse;
 import com.orio.book_processing.processing.chapter.summary.services.wrappers.ChapterSummaryService;
+import com.orio.book_processing.queue.Job.JobType;
+import com.orio.book_processing.queue.JobDispatcher;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -28,17 +29,18 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/pdf/process")
 public class ChapterSummaryController {
 
-    private final ChapterSummaryWorkflow chapterSummaryWorkflow;
     private final ChapterSummaryService chapterSummaryService;
+    private final JobDispatcher jobDispatcher;
 
     @PostMapping("/chapter/summary")
-    public ResponseEntity<Long> chapterSummary(@RequestParam Long chapterId) {
+    public ResponseEntity<?> chapterSummary(@RequestParam Long chapterId) {
         try {
-            return ResponseEntity.ok(chapterSummaryWorkflow.generateChapterSummary(chapterId));
+            Long jobId = jobDispatcher.enqueue(JobType.CHAPTER_SUMMARY, chapterId);
+            return ResponseEntity.accepted().body(jobId);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
-        } catch (LLMGenerationException e) {
-            return ResponseEntity.internalServerError().build();
+        } catch (JsonProcessingException e) {
+            return ResponseEntity.badRequest().body(e);
         }
     }
 

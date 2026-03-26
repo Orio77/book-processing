@@ -27,7 +27,7 @@ public class ChapterSummaryWorkflow {
 
     public Long generateChapterSummary(Long chapterId) throws LLMGenerationException {
         log.info("Parsing chapter from the database...");
-        Chapter chapter = chapterService.getChapter(chapterId);
+        Chapter chapter = chapterService.getChapterEagerly(chapterId);
         log.info("Retrieved chapter {} from the database", chapterId);
 
         log.info("Generating summary for chapter {}...", chapterId);

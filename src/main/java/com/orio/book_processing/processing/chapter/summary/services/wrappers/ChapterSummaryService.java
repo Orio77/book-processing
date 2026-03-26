@@ -59,9 +59,9 @@ public class ChapterSummaryService {
         boolean existsById = chapterSummaryRepo.existsById(chapterId);
         boolean isDeleted = !existsById;
         if (isDeleted) {
-            log.info("Chapter summary with id {} deleted successfully.");
+            log.info("Chapter summary with id {} deleted successfully.", chapterId);
         } else {
-            log.warn("Chapter summary with id {} not found, returning.");
+            log.warn("Chapter summary with id {} not found, returning.", chapterId);
         }
         return isDeleted;
     }
