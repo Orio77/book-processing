@@ -23,7 +23,7 @@ public class JobDispatcher {
         log.info("Enqueing process started...");
         String json = objectMapper.writeValueAsString(payloadDTO);
         log.info("JSON mapped successfully");
-        log.debug("Received JSON: {}", json.substring(0, 1000));
+        log.debug("Received JSON: {}", json.substring(0, Math.min(json.length() - 1, 1000)));
 
         Job job = jobWorkerService.createJob(jobType, json);
 

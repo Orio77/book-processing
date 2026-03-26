@@ -30,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class GeminiCliChatModel implements ChatModel {
 
-    private static final long GEMINI_TIMEOUT_SECONDS = 120;
+    private static final long GEMINI_TIMEOUT_SECONDS = 180;
 
     @Override
     public ChatResponse call(Prompt prompt) {
@@ -62,7 +62,10 @@ public class GeminiCliChatModel implements ChatModel {
 
             String output = collectOutput(outputFuture);
 
+            log.debug("Response received: {}", output);
+
             if (process.exitValue() != 0) {
+                log.error("Gemini CLI failed with exit code " + process.exitValue() + ": " + output);
                 throw new IllegalStateException(
                         "Gemini CLI failed with exit code " + process.exitValue() + ": " + output);
             }
@@ -95,8 +98,10 @@ public class GeminiCliChatModel implements ChatModel {
         try {
             return future.get(5, TimeUnit.SECONDS);
         } catch (ExecutionException e) {
+            log.error("Failed to read Gemini CLI output {}", e);
             throw new IllegalStateException("Failed to read Gemini CLI output", e.getCause());
         } catch (TimeoutException e) {
+            log.error("Timed out collecting Gemini CLI output", e);
             throw new IllegalStateException("Timed out collecting Gemini CLI output", e);
         }
     }
@@ -113,7 +118,10 @@ public class GeminiCliChatModel implements ChatModel {
      * "Loaded cached credentials." — strip those and return only the model reply.
      */
     private String stripCliNoise(String output) {
-        return output.substring(output.indexOf("{"), output.lastIndexOf("}") + 1);
+        log.info("Stripping noise...");
+        return (output.contains("{") && output.contains("}"))
+                ? output.substring(output.indexOf("{"), output.lastIndexOf("}") + 1)
+                : output;
     }
 
     // --- command building ---

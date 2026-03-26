@@ -42,7 +42,8 @@ public class BasicQueryChatService implements QueryChatService {
         try {
             log.info("Sending query to {}...", chatModel.getDefaultOptions().getModel());
             Prompt prompt = new Prompt(CHAT_PROMPT.formatted(sentenceContext, query, chapterText));
-            log.debug("Calling {} with prompt:\n\n{}\n\n", chatModel.getDefaultOptions().getModel(), prompt);
+            log.debug("Calling {} with prompt:\n\n{}\n\n", chatModel.getDefaultOptions().getModel(),
+                    prompt.getContents().substring(0, Math.min(prompt.getContents().length(), 2000)));
             return chatModel.call(prompt).getResult()
                     .getOutput()
                     .getText();

@@ -29,11 +29,11 @@ public class ChatWorkflowService {
     private final ChapterService chapterService;
     private final ChatResponseService chatResponseService;
 
-    public String chat(List<ChatContextSentenceDTO> context, String query, Long chapterId)
+    public Long chat(List<ChatContextSentenceDTO> context, String query, Long chapterId)
             throws LLMGenerationException {
         log.info("Chat request received for chapter {}: {}", chapterId, query);
         String contextText = getContext(context);
-        String chapterText = chapterService.getChapter(chapterId).getText();
+        String chapterText = chapterService.getChapterEagerly(chapterId).getText();
 
         // Null or blank query triggers "explain" mode; otherwise treat as a user
         // question.
@@ -41,9 +41,7 @@ public class ChatWorkflowService {
                 ? queryChatService.generateChatResponse(contextText, query, chapterText)
                 : explanationChatService.generateChatResponse(contextText, chapterText);
 
-        chatResponseService.save(chapterId, query, response, context);
-
-        return response;
+        return chatResponseService.save(chapterId, query, response, context);
     }
 
     private String getContext(List<ChatContextSentenceDTO> context) {

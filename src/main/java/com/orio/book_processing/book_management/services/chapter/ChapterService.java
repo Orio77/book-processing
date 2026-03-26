@@ -61,6 +61,11 @@ public class ChapterService {
         return chapterRepo.getReferenceById(id);
     }
 
+    public Chapter getChapterEagerly(Long id) {
+        return chapterRepo.findByIdWithSentences(id)
+                .orElseThrow(() -> new EntityNotFoundException("Chapter not found with id " + id));
+    }
+
     public List<Chapter> getAllChapters(Long pdfId) {
         return chapterRepo.getByPdfId(pdfId);
     }

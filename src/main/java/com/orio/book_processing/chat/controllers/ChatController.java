@@ -12,10 +12,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.orio.book_processing.chat.ChatWorkflowService;
 import com.orio.book_processing.chat.dtos.PDFChatRequest;
 import com.orio.book_processing.chat.dtos.PDFChatResponse;
 import com.orio.book_processing.chat.services.impl.ChatResponseService;
+import com.orio.book_processing.queue.Job.JobType;
+import com.orio.book_processing.queue.JobDispatcher;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,29 +29,16 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/pdf/chat")
 public class ChatController {
 
-    private final ChatWorkflowService chatWorkflowService;
     private final ChatResponseService chatResponseService;
+    private final JobDispatcher jobDispatcher;
 
     @PostMapping()
     public ResponseEntity<?> chat(@RequestBody PDFChatRequest chatRequest) {
         try {
-            String response = chatWorkflowService.chat(chatRequest.context(), chatRequest.query(),
-                    chatRequest.chapterId());
-            return ResponseEntity.ok(response);
+            Long jobId = jobDispatcher.enqueue(JobType.CHAT, chatRequest);
+            return ResponseEntity.accepted().body(jobId);
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Chat request failed: " + e.getMessage());
-        }
-    }
-
-    @PostMapping("/explain")
-    public ResponseEntity<String> explain(@RequestBody PDFChatRequest explanationRequest) {
-        try {
-            String response = chatWorkflowService.chat(explanationRequest.context(),
-                    explanationRequest.query(),
-                    explanationRequest.chapterId());
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Chat request failed: " + e.getMessage());
+            return ResponseEntity.internalServerError().body("Chat request failed: " + e);
         }
     }
 

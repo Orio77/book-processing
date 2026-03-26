@@ -28,7 +28,7 @@ public class ChatResponseService {
     private final ChatResponseContextRepository chatResponseContextRepo;
     private final SentenceService sentenceService;
 
-    public void save(Long chapterId, String query, String response, List<ChatContextSentenceDTO> context) {
+    public Long save(Long chapterId, String query, String response, List<ChatContextSentenceDTO> context) {
         log.debug("Saving ChatResponse for query: {}", query);
         ChatResponse chatResponse = new ChatResponse();
         chatResponse.setChapterId(chapterId);
@@ -53,6 +53,7 @@ public class ChatResponseService {
         }).toList();
         chatResponseContextRepo.saveAll(chatResponseContexts);
         log.info("Saved {} links to ChatResponse {}", chatResponseContexts.size(), savedResponse.getId());
+        return savedResponse.getId();
     }
 
     public List<PDFChatResponse> getChatResponsesForChapter(Long chapterId) {
