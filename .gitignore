@@ -37,3 +37,4 @@ launch.json
 *.properties
 logs/
 src/main/resources/analysis
+.gemini/

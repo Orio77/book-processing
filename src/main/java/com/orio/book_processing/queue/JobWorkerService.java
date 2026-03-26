@@ -3,7 +3,9 @@ package com.orio.book_processing.queue;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.orio.book_processing.queue.Job.JobStatus;
@@ -19,6 +21,7 @@ public class JobWorkerService {
 
     private final List<JobHandler> handlers;
     private final JobRepository jobRepo;
+    private final ApplicationEventPublisher eventPublisher;
 
     public Job createJob(JobType jobType, String payload) {
         Job job = new Job();
@@ -29,6 +32,7 @@ public class JobWorkerService {
         return jobRepo.saveAndFlush(job);
     }
 
+    @Async
     @EventListener
     public void processNextJob(JobCreationEvent jobCreationEvent) {
         log.info("Looking for the next job...");
@@ -53,7 +57,8 @@ public class JobWorkerService {
                 job.setStatus(JobStatus.FAILED);
                 log.error("Error while completing a job {}", e.getMessage(), e);
             }
-            jobRepo.save(job);
+            Job completedJob = jobRepo.saveAndFlush(job);
+            eventPublisher.publishEvent(new JobCompletionEvent(completedJob.getId()));
         });
     }
 }
