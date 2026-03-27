@@ -25,10 +25,8 @@ public class JobQueueController {
 
     @GetMapping("/job/{id}")
     public ResponseEntity<Job> getJob(@PathVariable Long id) {
-        ResponseEntity<Job> result = jobRepo.findById(id).map(ResponseEntity::ok)
+        return jobRepo.findById(id).map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
-        jobRepo.deleteById(id);
-        return result;
     }
 
     @GetMapping("/job")
