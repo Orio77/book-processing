@@ -18,6 +18,12 @@ public class MockChatModel implements ChatModel {
 
     @Override
     public ChatResponse call(Prompt prompt) {
+        try {
+            Thread.sleep(15000);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         return ChatResponse.builder().generations(List.of(new Generation(new AssistantMessage("LLM Mocked Response"))))
                 .build();
     }
