@@ -2,8 +2,8 @@ package com.orio.book_processing.processing.chapter.summary.jobs;
 
 import org.springframework.stereotype.Service;
 
-import com.orio.book_processing.processing.chapter.ChapterSummaryWorkflow;
 import com.orio.book_processing.queue.Job.JobType;
+import com.orio.book_processing.processing.chapter.summary.ChapterSummaryWorkflow;
 import com.orio.book_processing.queue.JobHandler;
 
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package com.orio.book_processing.processing.chapter;
+package com.orio.book_processing.processing.chapter.summary;
 
 import org.springframework.stereotype.Service;
 
