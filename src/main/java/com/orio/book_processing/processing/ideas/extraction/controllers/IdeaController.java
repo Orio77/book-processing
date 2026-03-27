@@ -11,12 +11,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.orio.book_processing.processing.ideas.extraction.dtos.IdeaArgumentDTO;
-import com.orio.book_processing.processing.ideas.extraction.models.IdeaExtractionAiResponse;
 import com.orio.book_processing.processing.ideas.extraction.dtos.IdeaWithSentences;
-import com.orio.book_processing.processing.ideas.extraction.services.IdeaExtractionManagementService;
 import com.orio.book_processing.processing.ideas.extraction.services.wrappers.IdeaArgumentService;
 import com.orio.book_processing.processing.ideas.extraction.services.wrappers.IdeaService;
+import com.orio.book_processing.queue.Job.JobType;
+import com.orio.book_processing.queue.JobDispatcher;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,17 +32,19 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("api/pdf/process/idea")
 public class IdeaController {
 
-    private final IdeaExtractionManagementService ideaExtractionManagementService;
     private final IdeaService ideaService;
     private final IdeaArgumentService ideaArgumentService;
+    private final JobDispatcher jobDispatcher;
 
     @PostMapping("/extract")
     public ResponseEntity<?> extractIdeasByChapterId(@RequestParam Long chapterId) {
 
-        IdeaExtractionAiResponse result = ideaExtractionManagementService.extractIdeas(chapterId);
-        log.info("extraction completed");
-
-        return ResponseEntity.ok(result.ideaContainers().size());
+        try {
+            Long jobId = jobDispatcher.enqueue(JobType.IDEA_EXTRACTION, chapterId);
+            return ResponseEntity.accepted().body(jobId);
+        } catch (JsonProcessingException e) {
+            return ResponseEntity.badRequest().body(e);
+        }
     }
 
     @GetMapping("/get/all/{chapterId}")
