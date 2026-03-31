@@ -1,13 +1,20 @@
 spring.application.name=book-processing
-spring.jpa.hibernate.ddl-auto=update
 
+# Database Configuration
+spring.jpa.hibernate.ddl-auto=update
 spring.datasource.url=jdbc:postgresql://localhost:5432/your-database-name
 spring.datasource.username=postgres
 spring.datasource.password=your-password
 
+# File Upload Limits
 spring.servlet.multipart.max-file-size=50MB
 spring.servlet.multipart.max-request-size=50MB
 
+# Virtual Threads
 spring.threads.virtual.enabled=true
 
+# AI Configuration
 # spring.ai.ollama.chat.model=ministral-3:8b
+
+# CORS Configuration
+app.cors.allowed-origins=*
