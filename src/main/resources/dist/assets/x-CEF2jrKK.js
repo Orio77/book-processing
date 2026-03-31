@@ -1,0 +1,1 @@
+import{e}from"./index-jdbKYKwz.js";const o=[["path",{d:"M21 12a9 9 0 1 1-6.219-8.56",key:"13zald"}]],d=e("loader-circle",o);const c=[["path",{d:"M18 6 6 18",key:"1bl5f8"}],["path",{d:"m6 6 12 12",key:"d8bk6v"}]],t=e("x",c);export{d as L,t as X};

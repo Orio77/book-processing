@@ -29,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Primary
 @Component
-@Profile("!mock")
+@Profile("local")
 public class GeminiCliChatModel implements ChatModel {
 
     private static final long GEMINI_TIMEOUT_SECONDS = 180;
