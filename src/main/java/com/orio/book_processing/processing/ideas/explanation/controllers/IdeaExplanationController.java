@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.orio.book_processing.processing.ideas.explanation.dtos.IdeaExplanationRequest;
 import com.orio.book_processing.processing.ideas.explanation.dtos.IdeaExplanationResponse;
+import com.orio.book_processing.processing.ideas.explanation.jobs.IdeasExplanationRequest;
 import com.orio.book_processing.processing.ideas.explanation.models.IdeaExplanation;
 import com.orio.book_processing.processing.ideas.explanation.services.IdeaExplanationService;
 import com.orio.book_processing.queue.models.Job.JobType;
@@ -44,6 +45,17 @@ public class IdeaExplanationController {
         try {
             Long jobId = jobDispatcher.enqueue(JobType.IDEA_EXPLANATION,
                     new IdeaExplanationRequest(ideaId, ideaContent));
+            return ResponseEntity.accepted().body(jobId);
+        } catch (JsonProcessingException e) {
+            return ResponseEntity.badRequest().body(e);
+        }
+    }
+
+    @PostMapping("/{chapterId}/explanations")
+    public ResponseEntity<?> createExplanations(@PathVariable Long chapterId) {
+        try {
+            Long jobId = jobDispatcher.enqueue(JobType.IDEAS_EXPLANATION,
+                    new IdeasExplanationRequest(chapterId));
             return ResponseEntity.accepted().body(jobId);
         } catch (JsonProcessingException e) {
             return ResponseEntity.badRequest().body(e);

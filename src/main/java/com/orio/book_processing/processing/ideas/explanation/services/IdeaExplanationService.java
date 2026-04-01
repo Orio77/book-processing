@@ -111,4 +111,10 @@ public class IdeaExplanationService {
         return Optional.of(savedExplanation);
     }
 
+    public List<Optional<IdeaExplanation>> createExplanations(Long chapterId) {
+        List<Idea> ideas = ideaRepo.findDistinctBySentencesSentenceChapterId(chapterId);
+        return ideas.stream().map(idea -> createExplanation(idea.getId(), idea.getTitle() + "\n" + idea.getArguments()))
+                .toList();
+    }
+
 }

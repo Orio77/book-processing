@@ -36,7 +36,7 @@ public class Job {
     private Long resultId;
 
     public enum JobType {
-        PDF_UPLOAD, CHAPTER_SUMMARY, CHAT, IDEA_EXTRACTION, IDEA_EXPLANATION
+        PDF_UPLOAD, CHAPTER_SUMMARY, CHAT, IDEA_EXTRACTION, IDEA_EXPLANATION, IDEAS_EXPLANATION
     }
 
     public enum JobStatus {

@@ -1,4 +1,4 @@
-package com.orio.book_processing.processing.ideas.explanation.jobs;
+package com.orio.book_processing.processing.ideas.explanation.exceptions;
 
 public class IdeaExplanationGenerationException extends Exception {
 
