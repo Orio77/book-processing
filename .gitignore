@@ -35,7 +35,7 @@ build/
 launch.json
 
 *.properties
-!src/main/resources/application-api.properties
+!*application-*.properties 
 logs/
 src/main/resources/analysis
 .gemini/
