@@ -28,8 +28,8 @@ import com.orio.book_processing.book_management.models.Sentence;
 import com.orio.book_processing.book_management.services.chapter.ChapterService;
 import com.orio.book_processing.book_management.services.pdf.PDFService;
 import com.orio.book_processing.book_management.services.sentence.SentenceService;
-import com.orio.book_processing.queue.Job.JobType;
-import com.orio.book_processing.queue.JobDispatcher;
+import com.orio.book_processing.queue.models.Job.JobType;
+import com.orio.book_processing.queue.services.JobDispatcher;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;

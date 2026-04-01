@@ -1,4 +1,4 @@
-package com.orio.book_processing.queue;
+package com.orio.book_processing.queue.controllers;
 
 import java.util.List;
 
@@ -8,6 +8,10 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+
+import com.orio.book_processing.queue.events.JobCompletionEvent;
+import com.orio.book_processing.queue.models.Job;
+import com.orio.book_processing.queue.repositories.JobRepository;
 
 import lombok.RequiredArgsConstructor;
 

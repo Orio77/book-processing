@@ -16,8 +16,8 @@ import com.orio.book_processing.processing.ideas.extraction.dtos.IdeaArgumentDTO
 import com.orio.book_processing.processing.ideas.extraction.dtos.IdeaWithSentences;
 import com.orio.book_processing.processing.ideas.extraction.services.wrappers.IdeaArgumentService;
 import com.orio.book_processing.processing.ideas.extraction.services.wrappers.IdeaService;
-import com.orio.book_processing.queue.Job.JobType;
-import com.orio.book_processing.queue.JobDispatcher;
+import com.orio.book_processing.queue.models.Job.JobType;
+import com.orio.book_processing.queue.services.JobDispatcher;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,4 +1,4 @@
-package com.orio.book_processing.queue;
+package com.orio.book_processing.queue.services;
 
 import java.util.List;
 import java.util.Optional;
@@ -8,8 +8,12 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import com.orio.book_processing.queue.Job.JobStatus;
-import com.orio.book_processing.queue.Job.JobType;
+import com.orio.book_processing.queue.events.JobCompletionEvent;
+import com.orio.book_processing.queue.events.JobCreationEvent;
+import com.orio.book_processing.queue.models.Job;
+import com.orio.book_processing.queue.models.Job.JobStatus;
+import com.orio.book_processing.queue.models.Job.JobType;
+import com.orio.book_processing.queue.repositories.JobRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

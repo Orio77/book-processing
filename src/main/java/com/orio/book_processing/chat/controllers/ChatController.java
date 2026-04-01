@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.orio.book_processing.chat.dtos.PDFChatRequest;
 import com.orio.book_processing.chat.dtos.PDFChatResponse;
 import com.orio.book_processing.chat.services.impl.ChatResponseService;
-import com.orio.book_processing.queue.Job.JobType;
-import com.orio.book_processing.queue.JobDispatcher;
+import com.orio.book_processing.queue.models.Job.JobType;
+import com.orio.book_processing.queue.services.JobDispatcher;
 
 import lombok.RequiredArgsConstructor;
 

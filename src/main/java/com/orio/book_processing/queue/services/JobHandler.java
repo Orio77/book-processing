@@ -1,6 +1,6 @@
-package com.orio.book_processing.queue;
+package com.orio.book_processing.queue.services;
 
-import com.orio.book_processing.queue.Job.JobType;
+import com.orio.book_processing.queue.models.Job.JobType;
 
 public interface JobHandler {
 

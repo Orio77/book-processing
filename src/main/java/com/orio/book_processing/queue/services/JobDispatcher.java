@@ -1,11 +1,13 @@
-package com.orio.book_processing.queue;
+package com.orio.book_processing.queue.services;
 
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.orio.book_processing.queue.Job.JobType;
+import com.orio.book_processing.queue.events.JobCreationEvent;
+import com.orio.book_processing.queue.models.Job;
+import com.orio.book_processing.queue.models.Job.JobType;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

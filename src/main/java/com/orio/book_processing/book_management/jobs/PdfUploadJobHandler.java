@@ -10,8 +10,8 @@ import com.orio.book_processing.book_management.dtos.request.PdfUploadDTO;
 import com.orio.book_processing.book_management.exceptions.FileContentException;
 import com.orio.book_processing.book_management.exceptions.PDFLoadingException;
 import com.orio.book_processing.book_management.services.upload.PdfUploadService;
-import com.orio.book_processing.queue.Job.JobType;
-import com.orio.book_processing.queue.JobHandler;
+import com.orio.book_processing.queue.models.Job.JobType;
+import com.orio.book_processing.queue.services.JobHandler;
 
 import lombok.RequiredArgsConstructor;
 

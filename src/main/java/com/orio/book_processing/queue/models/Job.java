@@ -1,4 +1,4 @@
-package com.orio.book_processing.queue;
+package com.orio.book_processing.queue.models;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

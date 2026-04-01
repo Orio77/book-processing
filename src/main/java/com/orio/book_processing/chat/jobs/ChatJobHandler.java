@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.orio.book_processing.chat.ChatWorkflowService;
 import com.orio.book_processing.chat.dtos.PDFChatRequest;
-import com.orio.book_processing.queue.Job.JobType;
-import com.orio.book_processing.queue.JobHandler;
+import com.orio.book_processing.queue.models.Job.JobType;
+import com.orio.book_processing.queue.services.JobHandler;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

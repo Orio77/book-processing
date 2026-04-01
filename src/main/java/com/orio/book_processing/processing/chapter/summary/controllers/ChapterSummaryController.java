@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.orio.book_processing.processing.chapter.summary.dtos.ChapterSummaryResponse;
 import com.orio.book_processing.processing.chapter.summary.services.wrappers.ChapterSummaryService;
-import com.orio.book_processing.queue.Job.JobType;
-import com.orio.book_processing.queue.JobDispatcher;
+import com.orio.book_processing.queue.models.Job.JobType;
+import com.orio.book_processing.queue.services.JobDispatcher;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
