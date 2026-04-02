@@ -59,6 +59,7 @@ public class JobWorkerService {
                 log.info("Job completed successfully.");
             } catch (Exception e) {
                 job.setStatus(JobStatus.FAILED);
+                job.setErrorText(e.getMessage());
                 log.error("Error while completing a job {}", e.getMessage(), e);
             }
             Job completedJob = jobRepo.saveAndFlush(job);

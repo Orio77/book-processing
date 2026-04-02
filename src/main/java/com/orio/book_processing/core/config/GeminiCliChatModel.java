@@ -20,6 +20,8 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+import com.orio.book_processing.core.exceptions.LLMGenerationException;
+
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -32,17 +34,20 @@ import lombok.extern.slf4j.Slf4j;
 @Profile("local")
 public class GeminiCliChatModel implements ChatModel {
 
-    private static final long GEMINI_TIMEOUT_SECONDS = 180;
+    private static final long GEMINI_TIMEOUT_SECONDS = 300;
 
     @Override
-    public ChatResponse call(Prompt prompt) {
+    public ChatResponse call(Prompt prompt) throws LLMGenerationException {
+        if (prompt == null) {
+            throw new IllegalArgumentException("Prompt is null");
+        }
         long startNanos = System.nanoTime();
         String userInput = prompt.getUserMessage().getText();
         if (userInput == null || userInput.isBlank()) {
             throw new IllegalArgumentException("Prompt user message is empty");
         }
 
-        ProcessBuilder processBuilder = new ProcessBuilder(buildCommand());
+        ProcessBuilder processBuilder = createProcessBuilder(buildCommand());
 
         try {
             Process process = processBuilder.start();
@@ -57,7 +62,7 @@ public class GeminiCliChatModel implements ChatModel {
             boolean finished = process.waitFor(GEMINI_TIMEOUT_SECONDS, TimeUnit.SECONDS);
             if (!finished) {
                 destroyGracefully(process);
-                throw new IllegalStateException(
+                throw new LLMGenerationException(
                         "Gemini CLI timed out after " + GEMINI_TIMEOUT_SECONDS + " seconds");
             }
             log.info("gemini process finished in {} ms (exit {})", elapsedMs(startNanos), process.exitValue());
@@ -68,7 +73,7 @@ public class GeminiCliChatModel implements ChatModel {
 
             if (process.exitValue() != 0) {
                 log.error("Gemini CLI failed with exit code " + process.exitValue() + ": " + output);
-                throw new IllegalStateException(
+                throw new LLMGenerationException(
                         "Gemini CLI failed with exit code " + process.exitValue() + ": " + output);
             }
 
@@ -80,9 +85,9 @@ public class GeminiCliChatModel implements ChatModel {
                     .build();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new IllegalStateException("Gemini CLI call was interrupted", e);
+            throw new LLMGenerationException("Gemini CLI call was interrupted", e);
         } catch (IOException e) {
-            throw new IllegalStateException("Failed to execute Gemini CLI process", e);
+            throw new LLMGenerationException("Failed to execute Gemini CLI process", e);
         }
     }
 
@@ -92,7 +97,7 @@ public class GeminiCliChatModel implements ChatModel {
         try (in) {
             return new String(in.readAllBytes(), StandardCharsets.UTF_8);
         } catch (IOException e) {
-            throw new IllegalStateException("Failed to read Gemini CLI output", e);
+            throw new LLMGenerationException("Failed to read Gemini CLI output", e);
         }
     }
 
@@ -101,10 +106,10 @@ public class GeminiCliChatModel implements ChatModel {
             return future.get(5, TimeUnit.SECONDS);
         } catch (ExecutionException e) {
             log.error("Failed to read Gemini CLI output {}", e);
-            throw new IllegalStateException("Failed to read Gemini CLI output", e.getCause());
+            throw new LLMGenerationException("Failed to read Gemini CLI output", e.getCause());
         } catch (TimeoutException e) {
             log.error("Timed out collecting Gemini CLI output", e);
-            throw new IllegalStateException("Timed out collecting Gemini CLI output", e);
+            throw new LLMGenerationException("Timed out collecting Gemini CLI output", e);
         }
     }
 
@@ -124,6 +129,10 @@ public class GeminiCliChatModel implements ChatModel {
         return (output.contains("{") && output.contains("}"))
                 ? output.substring(output.indexOf("{"), output.lastIndexOf("}") + 1)
                 : output;
+    }
+
+    protected ProcessBuilder createProcessBuilder(List<String> command) {
+        return new ProcessBuilder(command);
     }
 
     // --- command building ---
