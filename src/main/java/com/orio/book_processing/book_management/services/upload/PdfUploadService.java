@@ -7,6 +7,7 @@ import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.orio.book_processing.book_management.dtos.request.PageRange;
@@ -20,7 +21,6 @@ import com.orio.book_processing.book_management.services.pdf.PDFService;
 import com.orio.book_processing.book_management.services.sentence.SentenceService;
 import com.orio.book_processing.book_management.services.tokenizer.Tokenizer;
 
-import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,7 +37,7 @@ public class PdfUploadService implements UploadService {
 
     @Override
     @Transactional
-    public Long upload(MultipartFile file, List<PageRange> chapterPageRanges)
+    public Long upload(MultipartFile file, List<PageRange> chapterPageRanges, Long userId)
             throws PDFLoadingException, FileContentException {
 
         log.info("Uploading a pdf...");
@@ -55,7 +55,7 @@ public class PdfUploadService implements UploadService {
         try (PDDocument doc = Loader.loadPDF(fileBytes)) {
             PDF resPdf = pdfService.createPDF(doc, file, fileBytes);
             log.info("PDF object created successfully: {}", resPdf.getTitle());
-            resPdf = pdfService.savePDF(resPdf);
+            resPdf = pdfService.savePDFForUser(resPdf, userId);
 
             log.info("Creating chapters...");
 

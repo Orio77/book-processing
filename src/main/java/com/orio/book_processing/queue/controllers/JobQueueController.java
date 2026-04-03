@@ -8,6 +8,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.orio.book_processing.queue.events.JobCompletionEvent;
 import com.orio.book_processing.queue.models.Job;
@@ -16,6 +17,7 @@ import com.orio.book_processing.queue.repositories.JobRepository;
 import lombok.RequiredArgsConstructor;
 
 @Controller
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class JobQueueController {
 

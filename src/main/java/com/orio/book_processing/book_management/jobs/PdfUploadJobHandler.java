@@ -36,6 +36,6 @@ public class PdfUploadJobHandler implements JobHandler {
                 upload.contentType(),
                 upload.fileBytes());
 
-        return pdfUploadService.upload(queuedFile, upload.chapterPageRanges());
+        return pdfUploadService.upload(queuedFile, upload.chapterPageRanges(), upload.userId());
     }
 }

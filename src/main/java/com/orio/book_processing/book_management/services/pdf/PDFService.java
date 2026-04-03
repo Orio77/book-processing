@@ -4,12 +4,13 @@ import java.util.List;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.orio.book_processing.auth.User;
+import com.orio.book_processing.auth.UserRepository;
 import com.orio.book_processing.book_management.models.PDF;
 import com.orio.book_processing.book_management.repositories.PDFRepository;
-
-import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 public class PDFService {
 
     private final PDFRepository pdfRepo;
+    private final UserRepository userRepo;
 
     public PDF createPDF(PDDocument doc, MultipartFile file, byte[] fileBytes) {
         PDF pdf = new PDF();
@@ -38,32 +40,35 @@ public class PDFService {
         return pdf;
     }
 
-    public PDF savePDF(PDF pdf) {
+    public PDF savePDFForUser(PDF pdf, Long userId) {
         log.info("Saving pdf {}...", pdf.getTitle());
+        User user = userRepo.getReferenceById(userId);
+        pdf.setUser(user);
         PDF savedPDF = pdfRepo.saveAndFlush(pdf);
         log.info("Saved pdf {} with id: {}", pdf.getTitle(), pdf.getId());
         return savedPDF;
     }
 
     @Transactional(readOnly = true)
-    public PDF getPdf(Long id) throws EntityNotFoundException {
-        return pdfRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("PDF not found with id: " + id));
+    public PDF getPdf(Long pdfId, Long userId) throws EntityNotFoundException {
+        return pdfRepo.findByIdAndUserId(pdfId, userId)
+                .orElseThrow(() -> new EntityNotFoundException("PDF not found with id: " + pdfId));
     }
 
     @Transactional(readOnly = true)
-    public List<PDF> getAllPdfs() {
-        return pdfRepo.findAll();
+    public List<PDF> getAllPdfs(Long userId) {
+        return pdfRepo.findAllByUserId(userId);
     }
 
     @Transactional
-    public boolean deletePDF(Long id) {
-        log.info("Deleting PDF {}...", id);
-        if (!pdfRepo.existsById(id)) {
-            log.warn("PDf with id {} doesn't exist, returning.", id);
+    public boolean deletePDF(Long pdfId, Long userId) {
+        log.info("Deleting PDF {}...", pdfId);
+        if (!pdfRepo.existsById(pdfId)) {
+            log.warn("PDf with id {} doesn't exist, returning.", pdfId);
             return false;
         }
-        pdfRepo.deleteById(id);
-        log.info("PDF with id {} deleted successfully.", id);
+        pdfRepo.deleteByIdAndUserId(pdfId, userId);
+        log.info("PDF with id {} deleted successfully.", pdfId);
         return true;
     }
 

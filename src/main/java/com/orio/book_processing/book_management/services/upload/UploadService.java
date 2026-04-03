@@ -13,6 +13,7 @@ import com.orio.book_processing.book_management.exceptions.PDFLoadingException;
  */
 public interface UploadService {
 
-    Long upload(MultipartFile file, List<PageRange> chapterPageRanges) throws FileContentException, PDFLoadingException;
+    Long upload(MultipartFile file, List<PageRange> chapterPageRanges, Long userId)
+            throws FileContentException, PDFLoadingException;
 
 }

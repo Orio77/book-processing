@@ -6,5 +6,5 @@ public record PdfUploadDTO(
         byte[] fileBytes,
         String originalFilename,
         String contentType,
-        List<PageRange> chapterPageRanges) {
+        List<PageRange> chapterPageRanges, Long userId) {
 }

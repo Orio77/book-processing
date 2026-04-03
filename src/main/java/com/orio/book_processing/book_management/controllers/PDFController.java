@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -45,18 +47,23 @@ public class PDFController {
     private final PDFService pdfService;
     private final ChapterService chapterService;
     private final SentenceService sentenceService;
-
     private final JobDispatcher jobDispatcher;
+
+    private Long currentUserId(Jwt jwt) {
+        return ((Number) jwt.getClaim("uid")).longValue();
+    }
 
     @PostMapping("/upload")
     public ResponseEntity<?> uploadPdf(@RequestPart("file") MultipartFile file,
-            @RequestPart("chapterPageRanges") List<PageRange> chapterPageRanges) {
+            @RequestPart("chapterPageRanges") List<PageRange> chapterPageRanges, @AuthenticationPrincipal Jwt jwt) {
         try {
+            Long userId = currentUserId(jwt);
             Long jobId = jobDispatcher.enqueue(JobType.PDF_UPLOAD, new PdfUploadDTO(
                     file.getBytes(),
                     file.getOriginalFilename(),
                     file.getContentType(),
-                    chapterPageRanges));
+                    chapterPageRanges,
+                    userId));
             return ResponseEntity.accepted().body(jobId);
         } catch (JsonProcessingException e) {
             return ResponseEntity.badRequest().body("Couldn't convert JSON to object");
@@ -65,10 +72,11 @@ public class PDFController {
         }
     }
 
-    @GetMapping("/get/{id}")
-    public ResponseEntity<PdfResponse> getPdf(@PathVariable Long id) {
+    @GetMapping("/get/{pdfId}")
+    public ResponseEntity<PdfResponse> getPdf(@PathVariable Long pdfId, @AuthenticationPrincipal Jwt jwt) {
         try {
-            PDF pdf = pdfService.getPdf(id);
+            Long userId = currentUserId(jwt);
+            PDF pdf = pdfService.getPdf(pdfId, userId);
             return ResponseEntity.ok(PdfResponse.from(pdf));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
@@ -76,17 +84,19 @@ public class PDFController {
     }
 
     @GetMapping("/get/all")
-    public ResponseEntity<List<PdfResponse>> getAllPdfs() {
-        List<PDF> pdfs = pdfService.getAllPdfs();
+    public ResponseEntity<List<PdfResponse>> getAllPdfs(@AuthenticationPrincipal Jwt jwt) {
+        Long userId = currentUserId(jwt);
+        List<PDF> pdfs = pdfService.getAllPdfs(userId);
 
         return pdfs.isEmpty() ? ResponseEntity.noContent().build()
                 : ResponseEntity.ok(pdfs.stream().map(PdfResponse::from).toList());
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Boolean> deletePdf(@PathVariable Long id) {
+    @DeleteMapping("/delete/{pdfId}")
+    public ResponseEntity<Boolean> deletePdf(@PathVariable Long pdfId, @AuthenticationPrincipal Jwt jwt) {
+        Long userId = currentUserId(jwt);
 
-        boolean isDeleted = pdfService.deletePDF(id);
+        boolean isDeleted = pdfService.deletePDF(pdfId, userId);
         if (isDeleted) {
             return ResponseEntity.ok(true);
         } else {
@@ -94,11 +104,11 @@ public class PDFController {
         }
     }
 
-    @GetMapping("/chapter/get/{id}")
-    public ResponseEntity<ChapterResponse> getChapter(@PathVariable Long id) {
+    @GetMapping("/chapter/get/{chapterId}")
+    public ResponseEntity<ChapterResponse> getChapter(@PathVariable Long chapterId) {
 
         try {
-            Chapter chapter = chapterService.getChapter(id);
+            Chapter chapter = chapterService.getChapter(chapterId);
             return ResponseEntity.ok(ChapterResponse.from(chapter));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();

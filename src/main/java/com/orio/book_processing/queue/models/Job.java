@@ -1,5 +1,7 @@
 package com.orio.book_processing.queue.models;
 
+import com.orio.book_processing.auth.User;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -7,6 +9,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -34,6 +37,9 @@ public class Job {
     private String errorText;
 
     private Long resultId;
+
+    @ManyToOne
+    private User user;
 
     public enum JobType {
         PDF_UPLOAD, CHAPTER_SUMMARY, CHAT, IDEA_EXTRACTION, IDEA_EXPLANATION, IDEAS_EXPLANATION

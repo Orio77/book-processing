@@ -23,3 +23,7 @@ logging.level.com.orio.book_processing=DEBUG
 
 # CORS Configuration
 app.cors.allowed-origins=http://localhost:*
+
+# JWT
+security.jwt.secret=replace-with-a-long-random-secret-at-least-32-characters
+security.jwt.expiration-ms=3600000
