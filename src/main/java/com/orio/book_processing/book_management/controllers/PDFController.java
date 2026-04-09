@@ -38,6 +38,8 @@ import lombok.RequiredArgsConstructor;
 /**
  * REST endpoints for uploading PDFs and querying PDF, chapter, and sentence
  * data.
+ * 
+ * Returns 404 on JWT mismatch to hide resources
  */
 @RestController
 @RequestMapping("/api/pdf")
@@ -105,10 +107,11 @@ public class PDFController {
     }
 
     @GetMapping("/chapter/get/{chapterId}")
-    public ResponseEntity<ChapterResponse> getChapter(@PathVariable Long chapterId) {
+    public ResponseEntity<ChapterResponse> getChapter(@PathVariable Long chapterId, @AuthenticationPrincipal Jwt jwt) {
+        Long userId = currentUserId(jwt);
 
         try {
-            Chapter chapter = chapterService.getChapter(chapterId);
+            Chapter chapter = chapterService.getChapter(chapterId, userId);
             return ResponseEntity.ok(ChapterResponse.from(chapter));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
@@ -116,8 +119,11 @@ public class PDFController {
     }
 
     @GetMapping("/chapter/get/all/{pdfId}")
-    public ResponseEntity<List<ChapterResponse>> getAllChaptersByPdf(@PathVariable Long pdfId) {
-        List<Chapter> chapters = chapterService.getAllChapters(pdfId);
+    public ResponseEntity<List<ChapterResponse>> getAllChaptersByPdf(@PathVariable Long pdfId,
+            @AuthenticationPrincipal Jwt jwt) {
+        Long userId = currentUserId(jwt);
+
+        List<Chapter> chapters = chapterService.getAllChapters(pdfId, userId);
 
         return chapters.isEmpty() ? ResponseEntity.noContent().build()
                 : ResponseEntity.ok(chapters.stream().map(ChapterResponse::from).toList());
@@ -125,17 +131,19 @@ public class PDFController {
 
     @GetMapping("/sentence/get/{pdfId}")
     public ResponseEntity<List<SentenceResponse>> getSentencesInRange(@ModelAttribute PageRange pageRange,
-            @PathVariable Long pdfId) {
-        List<Sentence> sentences = sentenceService.getSentencesInRange(pageRange, pdfId);
+            @PathVariable Long pdfId, @AuthenticationPrincipal Jwt jwt) {
+        Long userId = currentUserId(jwt);
+        List<Sentence> sentences = sentenceService.getSentencesInRange(pageRange, pdfId, userId);
         return sentences.isEmpty() ? ResponseEntity.noContent().build()
                 : ResponseEntity.ok(sentences.stream().map(SentenceResponse::from).toList());
     }
 
     @PostMapping("/sentence/get/ranges/{pdfId}")
     public ResponseEntity<List<List<SentenceResponse>>> getSentencesInRanges(
-            @RequestBody List<PageRange> ranges, @PathVariable Long pdfId) {
+            @RequestBody List<PageRange> ranges, @PathVariable Long pdfId, @AuthenticationPrincipal Jwt jwt) {
 
-        List<List<Sentence>> sentenceGroups = sentenceService.getSentencesInRanges(ranges, pdfId);
+        Long userId = currentUserId(jwt);
+        List<List<Sentence>> sentenceGroups = sentenceService.getSentencesInRanges(ranges, pdfId, userId);
         return sentenceGroups.isEmpty() ? ResponseEntity.noContent().build()
                 : ResponseEntity.ok(sentenceGroups.stream()
                         .map(sentenceGroup -> sentenceGroup.stream().map(SentenceResponse::from).toList()).toList());

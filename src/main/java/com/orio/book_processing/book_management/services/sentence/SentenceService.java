@@ -5,6 +5,8 @@ import java.util.stream.IntStream;
 
 import org.springframework.stereotype.Service;
 
+import com.orio.book_processing.auth.User;
+import com.orio.book_processing.auth.UserRepository;
 import com.orio.book_processing.book_management.dtos.request.PageRange;
 import com.orio.book_processing.book_management.models.Chapter;
 import com.orio.book_processing.book_management.models.PDF;
@@ -20,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 public class SentenceService {
 
     private final SentenceRepository sentenceRepo;
+    private final UserRepository userRepo;
 
     public List<Sentence> createSentences(List<String> strSentences, PDF pdf, Chapter chapter, int pageNum) {
         List<Sentence> sentences = IntStream.range(0, strSentences.size()).mapToObj(idx -> {
@@ -37,8 +40,10 @@ public class SentenceService {
         return sentences;
     }
 
-    public void saveSentences(List<Sentence> sentences) {
+    public void saveSentences(List<Sentence> sentences, Long userId) {
         log.info("Saving {} sentences", sentences.size());
+        User user = userRepo.getReferenceById(userId);
+        sentences.forEach(s -> s.setUser(user));
         sentenceRepo.saveAll(sentences);
     }
 
@@ -46,12 +51,13 @@ public class SentenceService {
         return sentenceRepo.findAllById(sentenceIds);
     }
 
-    public List<Sentence> getSentencesInRange(PageRange pageRange, Long pdfId) {
-        return sentenceRepo.getByPageNumBetweenAndPdfId(pageRange.startPage(), pageRange.endPage(), pdfId);
+    public List<Sentence> getSentencesInRange(PageRange pageRange, Long pdfId, Long userId) {
+        return sentenceRepo.getByPageNumBetweenAndPdfIdAndUserId(pageRange.startPage(), pageRange.endPage(), pdfId,
+                userId);
     }
 
-    public List<List<Sentence>> getSentencesInRanges(List<PageRange> ranges, Long pdfId) {
-        List<Sentence> all = sentenceRepo.getByPdfId(pdfId);
+    public List<List<Sentence>> getSentencesInRanges(List<PageRange> ranges, Long pdfId, Long userId) {
+        List<Sentence> all = sentenceRepo.getByPdfIdAndUserId(pdfId, userId);
         return ranges.stream()
                 .map(range -> all.stream()
                         .filter(s -> s.getPageNum() >= range.startPage() && s.getPageNum() <= range.endPage())

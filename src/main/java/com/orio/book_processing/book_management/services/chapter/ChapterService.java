@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.orio.book_processing.auth.User;
+import com.orio.book_processing.auth.UserRepository;
 import com.orio.book_processing.book_management.dtos.request.PageRange;
 import com.orio.book_processing.book_management.models.Chapter;
 import com.orio.book_processing.book_management.models.PDF;
@@ -19,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ChapterService {
 
     private final ChapterRepository chapterRepo;
+    private final UserRepository userRepo;
 
     public List<Chapter> createChapters(PDF pdf, List<PageRange> chapterPageRanges) {
 
@@ -34,8 +37,10 @@ public class ChapterService {
         return chapters;
     }
 
-    public void saveChapters(List<Chapter> chapters) {
+    public void saveChapters(List<Chapter> chapters, Long userId) {
         log.info("Saving {} chapters...", chapters.size());
+        User user = userRepo.getReferenceById(userId);
+        chapters.forEach(ch -> ch.setUser(user));
         chapterRepo.saveAll(chapters);
     }
 
@@ -57,8 +62,12 @@ public class ChapterService {
         throw new IllegalArgumentException("Invalid page range");
     }
 
+    public Chapter getChapter(Long id, Long userId) throws EntityNotFoundException {
+        return chapterRepo.findByIdAndUserId(id, userId);
+    }
+
     public Chapter getChapter(Long id) throws EntityNotFoundException {
-        return chapterRepo.getReferenceById(id);
+        return chapterRepo.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
     public Chapter getChapterEagerly(Long id) {
@@ -66,7 +75,7 @@ public class ChapterService {
                 .orElseThrow(() -> new EntityNotFoundException("Chapter not found with id " + id));
     }
 
-    public List<Chapter> getAllChapters(Long pdfId) {
-        return chapterRepo.getByPdfId(pdfId);
+    public List<Chapter> getAllChapters(Long pdfId, Long userId) {
+        return chapterRepo.getByPdfIdAndUserId(pdfId, userId);
     }
 }

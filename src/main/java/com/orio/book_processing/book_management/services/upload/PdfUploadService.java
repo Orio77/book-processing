@@ -60,7 +60,7 @@ public class PdfUploadService implements UploadService {
             log.info("Creating chapters...");
 
             List<Chapter> chapters = chapterService.createChapters(resPdf, chapterPageRanges);
-            chapterService.saveChapters(chapters);
+            chapterService.saveChapters(chapters, userId);
             log.info("Saved {} chapters", chapters.size());
 
             PDFTextStripper stripper = new PDFTextStripper();
@@ -76,7 +76,7 @@ public class PdfUploadService implements UploadService {
 
                 List<String> strSentences = tokenizer.tokenize(pageContent);
                 List<Sentence> sentences = sentenceService.createSentences(strSentences, resPdf, chapter, i);
-                sentenceService.saveSentences(sentences);
+                sentenceService.saveSentences(sentences, userId);
                 log.debug("{} sentences for page {} created successfully", sentences.size(), i);
             }
 

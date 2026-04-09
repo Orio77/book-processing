@@ -15,9 +15,9 @@ public interface SentenceRepository extends JpaRepository<Sentence, Long> {
 
     List<Sentence> getByPageNumAndPdfId(int pageNum, Long pdfId);
 
-    List<Sentence> getByPageNumBetweenAndPdfId(int startPage, int endPage, Long pdfId);
+    List<Sentence> getByPageNumBetweenAndPdfIdAndUserId(int startPage, int endPage, Long pdfId, Long userId);
 
-    List<Sentence> getByPdfId(Long pdfId);
+    List<Sentence> getByPdfIdAndUserId(Long pdfId, Long userId);
 
     List<Sentence> getByChapterId(Long chapterId);
 }

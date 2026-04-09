@@ -20,4 +20,8 @@ public interface ChapterRepository extends JpaRepository<Chapter, Long> {
 
     @Query("SELECT DISTINCT c FROM Chapter c LEFT JOIN FETCH c.sentences WHERE c.id = :chapterId")
     Optional<Chapter> findByIdWithSentences(@Param("chapterId") Long chapterId);
+
+    Chapter findByIdAndUserId(Long id, Long userId);
+
+    List<Chapter> getByPdfIdAndUserId(Long pdfId, Long userId);
 }

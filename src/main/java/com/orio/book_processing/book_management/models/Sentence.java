@@ -1,5 +1,7 @@
 package com.orio.book_processing.book_management.models;
 
+import com.orio.book_processing.auth.User;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -35,6 +37,9 @@ public class Sentence {
 
     @Column(nullable = false)
     private int pageNum;
+
+    @ManyToOne
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "pdf_id", nullable = false)

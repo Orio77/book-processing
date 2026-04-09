@@ -5,6 +5,8 @@ import java.util.List;
 
 import java.util.stream.Collectors;
 
+import com.orio.book_processing.auth.User;
+
 import jakarta.annotation.Nullable;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -42,6 +44,9 @@ public class Chapter {
 
     @Column(nullable = false)
     private int endPage;
+
+    @ManyToOne
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "pdf_id", nullable = false)
