@@ -6,6 +6,8 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.orio.book_processing.auth.User;
+import com.orio.book_processing.auth.UserRepository;
 import com.orio.book_processing.book_management.models.Sentence;
 import com.orio.book_processing.book_management.services.sentence.SentenceService;
 import com.orio.book_processing.chat.dtos.ChatContextSentenceDTO;
@@ -26,14 +28,18 @@ public class ChatResponseService {
 
     private final ChatResponseRepository chatResponseRepo;
     private final ChatResponseContextRepository chatResponseContextRepo;
+    private final UserRepository userRepo;
     private final SentenceService sentenceService;
 
-    public Long save(Long chapterId, String query, String response, List<ChatContextSentenceDTO> context) {
+    public Long save(Long chapterId, String query, String response, List<ChatContextSentenceDTO> context, Long userId) {
         log.debug("Saving ChatResponse for query: {}", query);
         ChatResponse chatResponse = new ChatResponse();
         chatResponse.setChapterId(chapterId);
         chatResponse.setQuery(query);
         chatResponse.setContent(response);
+
+        User user = userRepo.getReferenceById(userId);
+        chatResponse.setUser(user);
 
         ChatResponse savedResponse = chatResponseRepo.saveAndFlush(chatResponse);
         log.info("ChatResponse saved with id {}", savedResponse.getId());
@@ -56,9 +62,9 @@ public class ChatResponseService {
         return savedResponse.getId();
     }
 
-    public List<PDFChatResponse> getChatResponsesForChapter(Long chapterId) {
+    public List<PDFChatResponse> getChatResponsesForChapter(Long chapterId, Long userId) {
         log.info("Parsing chat responses for chapter {}...", chapterId);
-        List<ChatResponse> chatResponses = chatResponseRepo.getByChapterId(chapterId);
+        List<ChatResponse> chatResponses = chatResponseRepo.getByChapterIdAndUserId(chapterId, userId);
         log.info("Found {} chat responses for chapter {}", chatResponses.size(), chapterId);
 
         log.info("Parsing ChatResponse <-> Sentence links for chapter {}", chapterId);
@@ -75,10 +81,10 @@ public class ChatResponseService {
         }).toList();
     }
 
-    public Optional<PDFChatResponse> update(Long chatResponseId, String newChatResponseBody) {
+    public Optional<PDFChatResponse> update(Long chatResponseId, String newChatResponseBody, Long userId) {
         log.info("Updating ChatResponse {}", chatResponseId);
         try {
-            ChatResponse chatResponse = chatResponseRepo.getReferenceById(chatResponseId);
+            ChatResponse chatResponse = chatResponseRepo.findByIdAndUserId(chatResponseId, userId);
             chatResponse.setContent(newChatResponseBody);
             ChatResponse savedChatResponse = chatResponseRepo.saveAndFlush(chatResponse);
 
@@ -107,12 +113,13 @@ public class ChatResponseService {
     /**
      * 
      * @param chatResponseId
+     * @param userId
      * @return true on successful deletion and false on fail
      */
     @Transactional
-    public boolean deleteChatResponse(Long chatResponseId) {
+    public boolean deleteChatResponse(Long chatResponseId, Long userId) {
         log.info("Deleting ChatResponse {}...", chatResponseId);
-        if (!chatResponseRepo.existsById(chatResponseId)) {
+        if (!chatResponseRepo.existsByIdAndUserId(chatResponseId, userId)) {
             log.warn("Deletion of ChatResponse {} failed - not found", chatResponseId);
             return false;
         }

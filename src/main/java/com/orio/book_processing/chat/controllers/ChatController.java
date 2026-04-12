@@ -3,6 +3,8 @@ package com.orio.book_processing.chat.controllers;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,10 +34,16 @@ public class ChatController {
     private final ChatResponseService chatResponseService;
     private final JobDispatcher jobDispatcher;
 
+    private Long currentUserId(Jwt jwt) {
+        return ((Number) jwt.getClaim("uid")).longValue();
+    }
+
     @PostMapping()
-    public ResponseEntity<?> chat(@RequestBody PDFChatRequest chatRequest) {
+    public ResponseEntity<?> chat(@RequestBody PDFChatRequest chatRequest, @AuthenticationPrincipal Jwt jwt) {
         try {
-            Long jobId = jobDispatcher.enqueue(JobType.CHAT, chatRequest);
+            Long userId = currentUserId(jwt);
+            PDFChatRequest userChatRequest = PDFChatRequest.from(chatRequest, userId);
+            Long jobId = jobDispatcher.enqueue(JobType.CHAT, userChatRequest);
             return ResponseEntity.accepted().body(jobId);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Chat request failed: " + e);
@@ -43,21 +51,26 @@ public class ChatController {
     }
 
     @GetMapping("/response/get/all/{chapterId}")
-    public ResponseEntity<List<PDFChatResponse>> getChatResponsesForChapter(@PathVariable Long chapterId) {
-        return ResponseEntity.ok(chatResponseService.getChatResponsesForChapter(chapterId));
+    public ResponseEntity<List<PDFChatResponse>> getChatResponsesForChapter(@PathVariable Long chapterId,
+            @AuthenticationPrincipal Jwt jwt) {
+        Long userId = currentUserId(jwt);
+        return ResponseEntity.ok(chatResponseService.getChatResponsesForChapter(chapterId, userId));
     }
 
     @PutMapping("/response/edit/{chatResponseId}")
     public ResponseEntity<PDFChatResponse> updateChatResponse(@PathVariable Long chatResponseId,
-            @RequestBody String body) {
-        return chatResponseService.update(chatResponseId, body)
+            @RequestBody String body, @AuthenticationPrincipal Jwt jwt) {
+        Long userId = currentUserId(jwt);
+        return chatResponseService.update(chatResponseId, body, userId)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/response/delete/{chatResponseId}")
-    public ResponseEntity<Void> deleteChatResponse(@PathVariable Long chatResponseId) {
-        return chatResponseService.deleteChatResponse(chatResponseId)
+    public ResponseEntity<Void> deleteChatResponse(@PathVariable Long chatResponseId,
+            @AuthenticationPrincipal Jwt jwt) {
+        Long userId = currentUserId(jwt);
+        return chatResponseService.deleteChatResponse(chatResponseId, userId)
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.notFound().build();
     }

@@ -13,5 +13,9 @@ import com.orio.book_processing.chat.models.ChatResponse;
 @Repository
 public interface ChatResponseRepository extends JpaRepository<ChatResponse, Long> {
 
-    List<ChatResponse> getByChapterId(Long chapterId);
+    List<ChatResponse> getByChapterIdAndUserId(Long chapterId, Long userId);
+
+    ChatResponse findByIdAndUserId(Long id, Long userId);
+
+    boolean existsByIdAndUserId(Long id, Long userId);
 }

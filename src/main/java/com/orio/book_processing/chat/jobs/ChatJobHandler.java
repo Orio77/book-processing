@@ -27,7 +27,8 @@ public class ChatJobHandler implements JobHandler {
     @Override
     public Long handle(String payload) throws Exception {
         PDFChatRequest chatRequest = objectMapper.readValue(payload, PDFChatRequest.class);
-        return chatWorkflowService.chat(chatRequest.context(), chatRequest.query(), chatRequest.chapterId());
+        return chatWorkflowService.chat(chatRequest.context(), chatRequest.query(), chatRequest.chapterId(),
+                chatRequest.userId());
     }
 
 }
