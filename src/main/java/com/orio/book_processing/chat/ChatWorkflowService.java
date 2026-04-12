@@ -33,7 +33,7 @@ public class ChatWorkflowService {
             throws LLMGenerationException {
         log.info("Chat request received for chapter {}: {}", chapterId, query);
         String contextText = getContext(context);
-        String chapterText = chapterService.getChapterEagerly(chapterId).getText();
+        String chapterText = chapterService.getChapterEagerly(chapterId, userId).getText();
 
         // Null or blank query triggers "explain" mode; otherwise treat as a user
         // question.

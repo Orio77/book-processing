@@ -13,6 +13,10 @@ import com.orio.book_processing.processing.chapter.summary.models.ChapterSummary
  */
 @Repository
 public interface ChapterSummaryRepository extends JpaRepository<ChapterSummary, Long> {
-    Optional<List<ChapterSummary>> findByChapterId(Long chapterId);
+    Optional<List<ChapterSummary>> findByChapterIdAndUserId(Long chapterId, Long userId);
+
+    ChapterSummary findByIdAndUserId(Long id, Long userId);
+
+    void deleteByIdAndUserId(Long id, Long userId);
 
 }

@@ -1,5 +1,6 @@
 package com.orio.book_processing.processing.chapter.summary.models;
 
+import com.orio.book_processing.auth.User;
 import com.orio.book_processing.book_management.models.Chapter;
 
 import jakarta.persistence.Column;
@@ -27,5 +28,8 @@ public class ChapterSummary {
 
     @Column(columnDefinition = "TEXT")
     private String summaryText;
+
+    @ManyToOne
+    private User user;
 
 }
