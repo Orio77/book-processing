@@ -51,7 +51,7 @@ public class IdeaExplanationController {
         try {
             Long userId = currentUserId(jwt);
             Long jobId = jobDispatcher.enqueue(JobType.IDEA_EXPLANATION,
-                    new IdeaExplanationRequest(ideaId, ideaContent, userId));
+                    new IdeaExplanationRequest(ideaId, ideaContent, userId), userId);
             return ResponseEntity.accepted().body(jobId);
         } catch (JsonProcessingException e) {
             return ResponseEntity.badRequest().body(e);
@@ -63,7 +63,7 @@ public class IdeaExplanationController {
         try {
             Long userId = currentUserId(jwt);
             Long jobId = jobDispatcher.enqueue(JobType.IDEAS_EXPLANATION,
-                    new IdeasExplanationRequest(chapterId, userId));
+                    new IdeasExplanationRequest(chapterId, userId), userId);
             return ResponseEntity.accepted().body(jobId);
         } catch (JsonProcessingException e) {
             return ResponseEntity.badRequest().body(e);

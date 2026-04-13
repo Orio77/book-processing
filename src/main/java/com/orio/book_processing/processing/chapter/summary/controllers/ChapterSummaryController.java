@@ -43,7 +43,8 @@ public class ChapterSummaryController {
     public ResponseEntity<?> chapterSummary(@RequestParam Long chapterId, @AuthenticationPrincipal Jwt jwt) {
         try {
             Long userId = currentUserId(jwt);
-            Long jobId = jobDispatcher.enqueue(JobType.CHAPTER_SUMMARY, new ChapterSummaryRequest(chapterId, userId));
+            Long jobId = jobDispatcher.enqueue(JobType.CHAPTER_SUMMARY, new ChapterSummaryRequest(chapterId, userId),
+                    userId);
             return ResponseEntity.accepted().body(jobId);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();

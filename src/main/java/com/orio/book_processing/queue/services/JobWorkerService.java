@@ -1,5 +1,6 @@
 package com.orio.book_processing.queue.services;
 
+import com.orio.book_processing.auth.UserRepository;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,13 +26,16 @@ public class JobWorkerService {
 
     private final List<JobHandler> handlers;
     private final JobRepository jobRepo;
+    private final UserRepository userRepo;
     private final ApplicationEventPublisher eventPublisher;
 
-    public Job createJob(JobType jobType, String payload) {
+    public Job createJob(JobType jobType, String payload, Long userId) {
         Job job = new Job();
         job.setType(jobType);
         job.setPayload(payload);
         job.setStatus(JobStatus.PENDING);
+        job.setUser(userRepo.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found for id: " + userId)));
 
         return jobRepo.saveAndFlush(job);
     }
@@ -41,7 +45,7 @@ public class JobWorkerService {
     public void processNextJob(JobCreationEvent jobCreationEvent) {
         log.info("Looking for the next job...");
 
-        Optional<Job> maybeJob = jobRepo.findById(jobCreationEvent.jobId());
+        Optional<Job> maybeJob = jobRepo.findByIdAndUserId(jobCreationEvent.jobId(), jobCreationEvent.userId());
         if (!maybeJob.isPresent()) {
             return;
         }
@@ -63,7 +67,7 @@ public class JobWorkerService {
                 log.error("Error while completing a job {}", e.getMessage(), e);
             }
             Job completedJob = jobRepo.saveAndFlush(job);
-            eventPublisher.publishEvent(new JobCompletionEvent(completedJob.getId()));
+            eventPublisher.publishEvent(new JobCompletionEvent(completedJob.getId(), completedJob.getUser().getId()));
         });
     }
 }

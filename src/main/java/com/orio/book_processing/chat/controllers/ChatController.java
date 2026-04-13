@@ -43,7 +43,7 @@ public class ChatController {
         try {
             Long userId = currentUserId(jwt);
             PDFChatRequest userChatRequest = PDFChatRequest.from(chatRequest, userId);
-            Long jobId = jobDispatcher.enqueue(JobType.CHAT, userChatRequest);
+            Long jobId = jobDispatcher.enqueue(JobType.CHAT, userChatRequest, userId);
             return ResponseEntity.accepted().body(jobId);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Chat request failed: " + e);

@@ -49,7 +49,8 @@ public class IdeaController {
 
         try {
             Long userId = currentUserId(jwt);
-            Long jobId = jobDispatcher.enqueue(JobType.IDEA_EXTRACTION, new IdeaExtractionRequest(chapterId, userId));
+            Long jobId = jobDispatcher.enqueue(JobType.IDEA_EXTRACTION, new IdeaExtractionRequest(chapterId, userId),
+                    userId);
             return ResponseEntity.accepted().body(jobId);
         } catch (JsonProcessingException e) {
             return ResponseEntity.badRequest().body(e);

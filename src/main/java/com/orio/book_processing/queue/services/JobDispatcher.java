@@ -21,16 +21,16 @@ public class JobDispatcher {
     private final JobWorkerService jobWorkerService;
     private final ApplicationEventPublisher eventPublisher;
 
-    public Long enqueue(JobType jobType, Object payloadDTO) throws JsonProcessingException {
+    public Long enqueue(JobType jobType, Object payloadDTO, Long userId) throws JsonProcessingException {
         log.info("Enqueing process started...");
         String json = objectMapper.writeValueAsString(payloadDTO);
         log.info("JSON mapped successfully");
         log.debug("Received JSON: {}", json.substring(0, Math.min(json.length() - 1, 1000)));
 
-        Job job = jobWorkerService.createJob(jobType, json);
+        Job job = jobWorkerService.createJob(jobType, json, userId);
 
         log.info("Notifying of job creation {}...", job.getId());
-        eventPublisher.publishEvent(new JobCreationEvent(job.getId()));
+        eventPublisher.publishEvent(new JobCreationEvent(job.getId(), userId));
 
         return job.getId();
     }

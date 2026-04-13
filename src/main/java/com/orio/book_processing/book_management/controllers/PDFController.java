@@ -65,7 +65,7 @@ public class PDFController {
                     file.getOriginalFilename(),
                     file.getContentType(),
                     chapterPageRanges,
-                    userId));
+                    userId), userId);
             return ResponseEntity.accepted().body(jobId);
         } catch (JsonProcessingException e) {
             return ResponseEntity.badRequest().body("Couldn't convert JSON to object");
