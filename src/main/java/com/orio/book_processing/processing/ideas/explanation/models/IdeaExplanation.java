@@ -1,5 +1,6 @@
 package com.orio.book_processing.processing.ideas.explanation.models;
 
+import com.orio.book_processing.auth.User;
 import com.orio.book_processing.processing.ideas.extraction.models.Idea;
 
 import jakarta.persistence.Column;
@@ -28,4 +29,7 @@ public class IdeaExplanation {
 
     @Column(columnDefinition = "TEXT")
     private String text;
+
+    @ManyToOne
+    private User user;
 }

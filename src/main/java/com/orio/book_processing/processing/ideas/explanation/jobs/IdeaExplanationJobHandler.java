@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.orio.book_processing.processing.ideas.explanation.dtos.IdeaExplanationRequest;
 import com.orio.book_processing.processing.ideas.explanation.exceptions.IdeaExplanationGenerationException;
 import com.orio.book_processing.processing.ideas.explanation.models.IdeaExplanation;
 import com.orio.book_processing.processing.ideas.explanation.services.IdeaExplanationService;
@@ -33,7 +34,7 @@ public class IdeaExplanationJobHandler implements JobHandler {
         IdeaExplanationRequest ideaExplanationRequest = objectMapper.readValue(payload, IdeaExplanationRequest.class);
         Optional<IdeaExplanation> maybeExplanation = ideaExplanationService.createExplanation(
                 ideaExplanationRequest.ideaId(),
-                ideaExplanationRequest.ideaContent());
+                ideaExplanationRequest.ideaContent(), ideaExplanationRequest.userId());
 
         return maybeExplanation.map(IdeaExplanation::getId)
                 .orElseThrow(() -> new IdeaExplanationGenerationException("Generated idea explanation was null"));

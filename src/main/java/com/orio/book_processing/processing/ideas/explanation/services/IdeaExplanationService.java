@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.orio.book_processing.auth.UserRepository;
 import com.orio.book_processing.processing.ideas.explanation.models.IdeaExplanation;
 import com.orio.book_processing.processing.ideas.explanation.repositories.IdeaExplanationRepository;
 import com.orio.book_processing.processing.ideas.extraction.models.Idea;
@@ -22,18 +23,19 @@ public class IdeaExplanationService {
 
     private final IdeaExplanationRepository ideaExplanationRepo;
     private final IdeaRepository ideaRepo;
+    private final UserRepository userRepo;
     private final IdeaExplanationGenerationService ideaExplanationGenerationService;
 
-    public Optional<List<IdeaExplanation>> getExplanationsForIdea(Long ideaId) {
+    public Optional<List<IdeaExplanation>> getExplanationsForIdea(Long ideaId, Long userId) {
         log.info("Fetching explanations for idea {}...", ideaId);
-        List<IdeaExplanation> ideaExplanations = ideaExplanationRepo.findAllByIdeaId(ideaId);
+        List<IdeaExplanation> ideaExplanations = ideaExplanationRepo.findAllByIdeaIdAndUserId(ideaId, userId);
         log.info("Fetched {} explanations for idea {}.", ideaExplanations.size(), ideaId);
         return Optional.of(ideaExplanations);
     }
 
-    public Optional<IdeaExplanation> getIdeaExplanation(Long explanationId) {
+    public Optional<IdeaExplanation> getIdeaExplanation(Long explanationId, Long userId) {
         log.info("Fetching explanation with id {}...", explanationId);
-        Optional<IdeaExplanation> explanation = ideaExplanationRepo.findById(explanationId);
+        Optional<IdeaExplanation> explanation = ideaExplanationRepo.findByIdAndUserId(explanationId, userId);
         if (explanation.isEmpty()) {
             log.warn("Explanation with id {} not found.", explanationId);
             return Optional.empty();
@@ -43,13 +45,13 @@ public class IdeaExplanationService {
     }
 
     @Transactional
-    public Optional<IdeaExplanation> update(Long explanationId, String newExplanationContent) {
+    public Optional<IdeaExplanation> update(Long explanationId, String newExplanationContent, Long userId) {
         log.info("Updating explanation {}...", explanationId);
         if (newExplanationContent == null || newExplanationContent.isBlank()) {
             log.warn("Received explanation to update was missing data");
             return Optional.empty();
         }
-        Optional<IdeaExplanation> oldExplanation = ideaExplanationRepo.findById(explanationId);
+        Optional<IdeaExplanation> oldExplanation = ideaExplanationRepo.findByIdAndUserId(explanationId, userId);
         if (oldExplanation.isEmpty()) {
             log.error("Explanation with id {} not found.", explanationId);
             return Optional.empty();
@@ -63,11 +65,11 @@ public class IdeaExplanationService {
     }
 
     @Transactional
-    public boolean delete(Long explanationId) {
+    public boolean delete(Long explanationId, Long userId) {
         log.info("Deleting explanation with id {}...", explanationId);
         try {
-            if (ideaExplanationRepo.existsById(explanationId)) {
-                ideaExplanationRepo.deleteById(explanationId);
+            if (ideaExplanationRepo.existsByIdAndUserId(explanationId, userId)) {
+                ideaExplanationRepo.deleteByIdAndUserId(explanationId, userId);
                 log.info("Explanation deleted successfully.");
                 return true;
             } else {
@@ -81,13 +83,13 @@ public class IdeaExplanationService {
     }
 
     @Transactional
-    public Optional<IdeaExplanation> createExplanation(Long ideaId, String ideaContent) {
+    public Optional<IdeaExplanation> createExplanation(Long ideaId, String ideaContent, Long userId) {
         if (ideaContent == null || ideaContent.isBlank()) {
             log.warn("Received explanation content is blank for idea {}.", ideaId);
             return Optional.empty();
         }
 
-        Optional<Idea> idea = ideaRepo.findById(ideaId);
+        Optional<Idea> idea = ideaRepo.findByIdAndUserId(ideaId, userId);
         if (idea.isEmpty()) {
             log.warn("Cannot create explanation. Idea with id {} not found.", ideaId);
             return Optional.empty();
@@ -103,6 +105,7 @@ public class IdeaExplanationService {
         IdeaExplanation explanation = new IdeaExplanation();
         explanation.setText(ideaExplanationText);
         explanation.setIdea(retrievedIdea);
+        explanation.setUser(userRepo.getReferenceById(userId));
 
         log.debug("Explanation generated: {}", explanation.getText());
 
@@ -111,9 +114,10 @@ public class IdeaExplanationService {
         return Optional.of(savedExplanation);
     }
 
-    public List<Optional<IdeaExplanation>> createExplanations(Long chapterId) {
-        List<Idea> ideas = ideaRepo.findDistinctBySentencesSentenceChapterId(chapterId);
-        return ideas.stream().map(idea -> createExplanation(idea.getId(), idea.getTitle() + "\n" + idea.getArguments()))
+    public List<Optional<IdeaExplanation>> createExplanations(Long chapterId, Long userId) {
+        List<Idea> ideas = ideaRepo.findDistinctByUserIdAndSentencesSentenceChapterId(chapterId, userId);
+        return ideas.stream()
+                .map(idea -> createExplanation(idea.getId(), idea.getTitle() + "\n" + idea.getArguments(), userId))
                 .toList();
     }
 

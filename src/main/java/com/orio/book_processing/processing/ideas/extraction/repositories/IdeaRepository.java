@@ -14,7 +14,7 @@ import com.orio.book_processing.processing.ideas.extraction.models.Idea;
 @Repository
 public interface IdeaRepository extends JpaRepository<Idea, Long> {
 
-    List<Idea> findDistinctBySentencesSentenceChapterId(Long chapterId);
+    List<Idea> findDistinctByUserIdAndSentencesSentenceChapterId(Long chapterId, Long userId);
 
     Optional<Idea> findByIdAndUserId(Long ideaId, Long userId);
 

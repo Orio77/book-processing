@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.orio.book_processing.processing.ideas.explanation.dtos.IdeaExplanationRequest;
 import com.orio.book_processing.processing.ideas.explanation.dtos.IdeaExplanationResponse;
-import com.orio.book_processing.processing.ideas.explanation.jobs.IdeasExplanationRequest;
+import com.orio.book_processing.processing.ideas.explanation.dtos.IdeasExplanationRequest;
 import com.orio.book_processing.processing.ideas.explanation.models.IdeaExplanation;
 import com.orio.book_processing.processing.ideas.explanation.services.IdeaExplanationService;
 import com.orio.book_processing.queue.models.Job.JobType;
@@ -34,17 +36,22 @@ public class IdeaExplanationController {
     private final IdeaExplanationService ideaExplanationService;
     private final JobDispatcher jobDispatcher;
 
+    private Long currentUserId(Jwt jwt) {
+        return ((Number) jwt.getClaim("uid")).longValue();
+    }
+
     @PostMapping("/{ideaId}/explanation")
     public ResponseEntity<?> createExplanation(@PathVariable Long ideaId,
-            @RequestBody String ideaContent) {
+            @RequestBody String ideaContent, @AuthenticationPrincipal Jwt jwt) {
         log.info("Explanation creation request received for idea {}.", ideaId);
         if (ideaContent == null || ideaContent.isBlank()) {
             return ResponseEntity.badRequest().body("Explanation content must not be blank.");
         }
 
         try {
+            Long userId = currentUserId(jwt);
             Long jobId = jobDispatcher.enqueue(JobType.IDEA_EXPLANATION,
-                    new IdeaExplanationRequest(ideaId, ideaContent));
+                    new IdeaExplanationRequest(ideaId, ideaContent, userId));
             return ResponseEntity.accepted().body(jobId);
         } catch (JsonProcessingException e) {
             return ResponseEntity.badRequest().body(e);
@@ -52,10 +59,11 @@ public class IdeaExplanationController {
     }
 
     @PostMapping("/{chapterId}/explanations")
-    public ResponseEntity<?> createExplanations(@PathVariable Long chapterId) {
+    public ResponseEntity<?> createExplanations(@PathVariable Long chapterId, @AuthenticationPrincipal Jwt jwt) {
         try {
+            Long userId = currentUserId(jwt);
             Long jobId = jobDispatcher.enqueue(JobType.IDEAS_EXPLANATION,
-                    new IdeasExplanationRequest(chapterId));
+                    new IdeasExplanationRequest(chapterId, userId));
             return ResponseEntity.accepted().body(jobId);
         } catch (JsonProcessingException e) {
             return ResponseEntity.badRequest().body(e);
@@ -63,9 +71,11 @@ public class IdeaExplanationController {
     }
 
     @GetMapping("/{ideaId}/explanations")
-    public ResponseEntity<List<IdeaExplanationResponse>> getExplanationsForIdea(@PathVariable Long ideaId) {
+    public ResponseEntity<List<IdeaExplanationResponse>> getExplanationsForIdea(@PathVariable Long ideaId,
+            @AuthenticationPrincipal Jwt jwt) {
         log.info("Explanations fetch for idea {} request received.", ideaId);
-        Optional<List<IdeaExplanation>> explanations = ideaExplanationService.getExplanationsForIdea(ideaId);
+        Long userId = currentUserId(jwt);
+        Optional<List<IdeaExplanation>> explanations = ideaExplanationService.getExplanationsForIdea(ideaId, userId);
         return explanations.map(exps -> ResponseEntity.ok(exps.stream()
                 .map(exp -> IdeaExplanationResponse.from(exp.getId(), exp.getIdea(), exp.getText()))
                 .toList()))
@@ -73,18 +83,21 @@ public class IdeaExplanationController {
     }
 
     @GetMapping("/explanations/{explanationId}")
-    public ResponseEntity<?> getIdeaExplanation(@PathVariable Long explanationId) {
+    public ResponseEntity<?> getIdeaExplanation(@PathVariable Long explanationId, @AuthenticationPrincipal Jwt jwt) {
         log.info("Explanation fetch with id {} received.", explanationId);
-        Optional<IdeaExplanation> explanation = ideaExplanationService.getIdeaExplanation(explanationId);
+        Long userId = currentUserId(jwt);
+        Optional<IdeaExplanation> explanation = ideaExplanationService.getIdeaExplanation(explanationId, userId);
         return explanation.map(exp -> ResponseEntity.ok(IdeaExplanationResponse.from(exp.getId(),
                 exp.getIdea(), exp.getText()))).orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/explanations/{explanationId}")
     public ResponseEntity<IdeaExplanationResponse> updateIdeaExplanation(@PathVariable Long explanationId,
-            @RequestBody String newExplanationContent) {
+            @RequestBody String newExplanationContent, @AuthenticationPrincipal Jwt jwt) {
         log.info("Explanation update request received.");
-        Optional<IdeaExplanation> explanation = ideaExplanationService.update(explanationId, newExplanationContent);
+        Long userId = currentUserId(jwt);
+        Optional<IdeaExplanation> explanation = ideaExplanationService.update(explanationId, newExplanationContent,
+                userId);
         return explanation.map(
                 exp -> ResponseEntity.ok(IdeaExplanationResponse.from(exp.getId(),
                         exp.getIdea(), exp.getText())))
@@ -92,9 +105,11 @@ public class IdeaExplanationController {
     }
 
     @DeleteMapping("/explanations/{explanationId}")
-    public ResponseEntity<Void> deleteIdeaExplanation(@PathVariable Long explanationId) {
+    public ResponseEntity<Void> deleteIdeaExplanation(@PathVariable Long explanationId,
+            @AuthenticationPrincipal Jwt jwt) {
         log.info("Explanation delete request received for id {}.", explanationId);
-        boolean deleted = ideaExplanationService.delete(explanationId);
+        Long userId = currentUserId(jwt);
+        boolean deleted = ideaExplanationService.delete(explanationId, userId);
         if (deleted) {
             return ResponseEntity.noContent().build();
         } else {
