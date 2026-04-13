@@ -1,5 +1,7 @@
 package com.orio.book_processing.processing.ideas.extraction.models;
 
+import com.orio.book_processing.auth.User;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -19,6 +21,9 @@ public class IdeaArgument {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ManyToOne
+    private User user;
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String text;

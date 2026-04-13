@@ -9,8 +9,11 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.orio.book_processing.auth.User;
+import com.orio.book_processing.auth.UserRepository;
 import com.orio.book_processing.book_management.models.Sentence;
 import com.orio.book_processing.book_management.services.sentence.SentenceService;
+import com.orio.book_processing.processing.ideas.extraction.dtos.IdeaExtractionRequest;
 import com.orio.book_processing.processing.ideas.extraction.models.Idea;
 import com.orio.book_processing.processing.ideas.extraction.models.IdeaArgument;
 import com.orio.book_processing.processing.ideas.extraction.models.IdeaExtractionAiResponse;
@@ -18,6 +21,7 @@ import com.orio.book_processing.processing.ideas.extraction.models.IdeaSentence;
 import com.orio.book_processing.processing.ideas.extraction.models.IdeaExtractionAiResponse.IdeaRequest;
 import com.orio.book_processing.processing.ideas.extraction.repositories.IdeaRepository;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,14 +36,23 @@ public class IdeaExtractionManagementService {
 
     private final SentenceService sentenceService;
     private final IdeaRepository ideaRepo;
+    private final UserRepository userRepo;
 
     private final BasicIdeaExtractionService extractionService;
 
     @Transactional
-    public IdeaExtractionAiResponse extractIdeas(Long chapterId) {
+    public IdeaExtractionAiResponse extractIdeas(IdeaExtractionRequest request) {
+        Long chapterId = request.chapterId();
+        Long userId = request.userId();
+        User user = userRepo.getReferenceById(userId);
         log.info("Fetching sentences for chapter {}...", chapterId);
-        List<Sentence> sentences = sentenceService.getSentencesByChapterId(chapterId);
-        log.info("Fetched {} sentences for chapter {}", sentences.size(), chapterId);
+        List<Sentence> sentences = sentenceService.getSentencesByChapterIdAndUserId(chapterId, userId);
+        log.info("Fetched {} sentences for chapter {}", sentences.size(), request);
+
+        if (sentences.isEmpty()) {
+            throw new EntityNotFoundException(
+                    "No sentences found for chapter %s and user %s".formatted(chapterId, userId));
+        }
 
         // Index sentences by ID for O(1) lookup during idea–sentence linking
         Map<Long, Sentence> sentencesByIds = sentences.stream()
@@ -47,24 +60,26 @@ public class IdeaExtractionManagementService {
 
         log.info("Calling LLM for idea extraction...");
         IdeaExtractionAiResponse extractionResponse = extractionService.getIdeas(sentences);
-        log.info("LLM found {} ideas in chapter {}", extractionResponse.ideaContainers().size(), chapterId);
+        log.info("LLM found {} ideas in chapter {}", extractionResponse.ideaContainers().size(), request);
 
         log.info("Saving {} ideas and sentences they belong too...", extractionResponse.ideaContainers().size());
-        extractionResponse.ideaContainers().forEach(saveIdeaContainer(sentencesByIds));
-        log.info("Saved {} ideas from chapter {}", extractionResponse.ideaContainers().size(), chapterId);
+        extractionResponse.ideaContainers().forEach(saveIdeaContainer(sentencesByIds, user));
+        log.info("Saved {} ideas from chapter {}", extractionResponse.ideaContainers().size(), request);
 
         return extractionResponse;
     }
 
-    private Consumer<? super IdeaRequest> saveIdeaContainer(Map<Long, Sentence> sentencesByIds) {
+    private Consumer<? super IdeaRequest> saveIdeaContainer(Map<Long, Sentence> sentencesByIds, User user) {
         return ideaContainer -> {
             Idea idea = new Idea();
             idea.setTitle(ideaContainer.ideaTitle());
+            idea.setUser(user);
 
             List<IdeaArgument> ideaArguments = ideaContainer.arguments().stream().map(argText -> {
                 IdeaArgument argument = new IdeaArgument();
                 argument.setIdea(idea);
                 argument.setText(argText);
+                argument.setUser(user);
                 return argument;
             }).toList();
 

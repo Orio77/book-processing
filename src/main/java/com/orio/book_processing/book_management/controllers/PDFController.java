@@ -111,7 +111,8 @@ public class PDFController {
         Long userId = currentUserId(jwt);
 
         try {
-            Chapter chapter = chapterService.getChapter(chapterId, userId);
+            Chapter chapter = chapterService.getChapter(chapterId, userId)
+                    .orElseThrow(() -> new EntityNotFoundException("No chapter found for id " + chapterId));
             return ResponseEntity.ok(ChapterResponse.from(chapter));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();

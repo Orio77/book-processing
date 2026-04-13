@@ -1,6 +1,7 @@
 package com.orio.book_processing.book_management.services.chapter;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -62,7 +63,7 @@ public class ChapterService {
         throw new IllegalArgumentException("Invalid page range");
     }
 
-    public Chapter getChapter(Long id, Long userId) throws EntityNotFoundException {
+    public Optional<Chapter> getChapter(Long id, Long userId) throws EntityNotFoundException {
         return chapterRepo.findByIdAndUserId(id, userId);
     }
 

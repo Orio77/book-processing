@@ -3,6 +3,7 @@ package com.orio.book_processing.processing.ideas.extraction.jobs;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.orio.book_processing.processing.ideas.extraction.dtos.IdeaExtractionRequest;
 import com.orio.book_processing.processing.ideas.extraction.services.IdeaExtractionManagementService;
 import com.orio.book_processing.queue.models.Job.JobType;
 import com.orio.book_processing.queue.services.JobHandler;
@@ -25,9 +26,9 @@ public class IdeaExtracionJobHandler implements JobHandler {
 
     @Override
     public Long handle(String payload) throws Exception {
-        Long chapterId = objectMapper.readValue(payload, Long.class);
-        ideaExtractionManagementService.extractIdeas(chapterId);
-        return chapterId;
+        IdeaExtractionRequest request = objectMapper.readValue(payload, IdeaExtractionRequest.class);
+        ideaExtractionManagementService.extractIdeas(request);
+        return request.chapterId();
     }
 
 }

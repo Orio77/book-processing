@@ -33,24 +33,23 @@ public class IdeaService {
     private final ChapterService chapterService;
     private final IdeaSentenceRepository ideaSentenceRepo;
 
-    public Optional<IdeaWithSentences> getIdea(Long ideaId) {
-        try {
-            log.info("Fetching idea {}", ideaId);
-            Idea idea = ideaRepo.getReferenceById(ideaId);
-            List<Sentence> sentences = ideaSentenceService.getSentencesByIdeaId(ideaId);
-            return Optional
-                    .of(new IdeaWithSentences(IdeaDTO.from(idea), sentences.stream().map(SentenceDTO::from).toList()));
-        } catch (EntityNotFoundException e) {
-            log.warn("Idea with id {} not found", ideaId);
-            return Optional.empty();
-        }
+    public IdeaWithSentences getIdea(Long ideaId, Long userId) throws EntityNotFoundException {
+        log.info("Looking up idea {} for user {}", ideaId, userId);
+        Idea idea = ideaRepo.findByIdAndUserId(ideaId, userId)
+                .orElseThrow(() -> {
+                    log.warn("No idea found with id {} for user {}", ideaId, userId);
+                    return new EntityNotFoundException("No idea found with id " + ideaId);
+                });
+        List<Sentence> sentences = ideaSentenceService.getSentencesByIdeaId(ideaId);
+        return new IdeaWithSentences(IdeaDTO.from(idea), sentences.stream().map(SentenceDTO::from).toList());
     }
 
     @Transactional
-    public Optional<List<IdeaWithSentences>> getIdeasByChapter(Long chapterId) {
+    public Optional<List<IdeaWithSentences>> getIdeasByChapter(Long chapterId, Long userId) {
         log.info("Fetching ideas for chapter {}...", chapterId);
 
-        Chapter chapter = chapterService.getChapter(chapterId);
+        Chapter chapter = chapterService.getChapter(chapterId, userId).orElseThrow(() -> new EntityNotFoundException(
+                "No chapter found with id " + chapterId));
         List<Sentence> chapterSentences = chapter.getSentences();
         List<Long> chapterSentenceIds = chapterSentences.stream().map(Sentence::getId).toList();
 
@@ -75,11 +74,11 @@ public class IdeaService {
         return Optional.of(ideasWithSentences);
     }
 
-    public Optional<Boolean> deleteIdea(Long ideaId) {
-        ideaRepo.deleteById(ideaId);
+    public Optional<Boolean> deleteIdea(Long ideaId, Long userId) {
+        ideaRepo.deleteByIdAndUserId(ideaId, userId);
 
         log.info("Deleting idea {}", ideaId);
-        Optional<Boolean> result = Optional.of(!ideaRepo.existsById(ideaId));
+        Optional<Boolean> result = Optional.of(!ideaRepo.existsByIdAndUserId(ideaId, userId));
 
         result.ifPresentOrElse(
                 res -> log.info("Idea {} deleted successfully", ideaId),

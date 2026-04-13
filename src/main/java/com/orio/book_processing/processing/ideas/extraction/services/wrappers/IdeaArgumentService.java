@@ -19,9 +19,9 @@ public class IdeaArgumentService {
 
     private final IdeaArgumentRepository ideaArgumentRepo;
 
-    public Optional<List<IdeaArgumentDTO>> getIdeaArgumentsForIdea(Long ideaId) {
+    public Optional<List<IdeaArgumentDTO>> getIdeaArgumentsForIdea(Long ideaId, Long userId) {
         log.info("Fetching arguments for idea {}...", ideaId);
-        List<IdeaArgument> args = ideaArgumentRepo.findAllByIdea_Id(ideaId);
+        List<IdeaArgument> args = ideaArgumentRepo.findAllByIdea_IdAndUserId(ideaId, userId);
         log.info("Found {} arguments for idea {}", args.size(), ideaId);
 
         // convert arguments to DTOs
