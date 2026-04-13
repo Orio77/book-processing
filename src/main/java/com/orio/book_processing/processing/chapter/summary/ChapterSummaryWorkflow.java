@@ -2,9 +2,11 @@ package com.orio.book_processing.processing.chapter.summary;
 
 import org.springframework.stereotype.Service;
 
+import com.orio.book_processing.auth.UserRepository;
 import com.orio.book_processing.book_management.models.Chapter;
 import com.orio.book_processing.book_management.services.chapter.ChapterService;
 import com.orio.book_processing.core.exceptions.LLMGenerationException;
+import com.orio.book_processing.processing.chapter.summary.dtos.ChapterSummaryRequest;
 import com.orio.book_processing.processing.chapter.summary.models.ChapterSummary;
 import com.orio.book_processing.processing.chapter.summary.services.ISummaryService;
 import com.orio.book_processing.processing.chapter.summary.services.wrappers.ChapterSummaryService;
@@ -24,10 +26,13 @@ public class ChapterSummaryWorkflow {
     private final ISummaryService summaryService;
     private final ChapterService chapterService;
     private final ChapterSummaryService chapterSummaryService;
+    private final UserRepository userRepo;
 
-    public Long generateChapterSummary(Long chapterId) throws LLMGenerationException {
+    public Long generateChapterSummary(ChapterSummaryRequest request) throws LLMGenerationException {
         log.info("Parsing chapter from the database...");
-        Chapter chapter = chapterService.getChapterEagerly(chapterId);
+        Long chapterId = request.chapterId();
+        Long userId = request.userId();
+        Chapter chapter = chapterService.getChapterEagerly(chapterId, userId);
         log.info("Retrieved chapter {} from the database", chapterId);
 
         log.info("Generating summary for chapter {}...", chapterId);
@@ -38,6 +43,7 @@ public class ChapterSummaryWorkflow {
         ChapterSummary chapterSummary = new ChapterSummary();
         chapterSummary.setChapter(chapter);
         chapterSummary.setSummaryText(summary);
+        chapterSummary.setUser(userRepo.getReferenceById(userId));
 
         log.info("Saving chapter summary...");
         ChapterSummary savedChapterSummary = chapterSummaryService.saveAndFlush(chapterSummary);

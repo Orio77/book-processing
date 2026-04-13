@@ -70,8 +70,8 @@ public class ChapterService {
         return chapterRepo.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
-    public Chapter getChapterEagerly(Long id) {
-        return chapterRepo.findByIdWithSentences(id)
+    public Chapter getChapterEagerly(Long id, Long userId) {
+        return chapterRepo.findByIdAndUserIdWithSentences(id, userId)
                 .orElseThrow(() -> new EntityNotFoundException("Chapter not found with id " + id));
     }
 

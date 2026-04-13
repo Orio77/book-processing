@@ -31,9 +31,10 @@ public class ChapterSummaryService {
         return savedChapterSummary;
     }
 
-    public Optional<List<ChapterSummary>> findByChapterId(Long chapterId) {
+    public Optional<List<ChapterSummary>> findByChapterIdAndUserId(Long chapterId, Long userId) {
         log.info("Retrieving sumaries for chapter {}", chapterId);
-        Optional<List<ChapterSummary>> chapterSummaries = chapterSummaryRepo.findByChapterId(chapterId);
+        Optional<List<ChapterSummary>> chapterSummaries = chapterSummaryRepo.findByChapterIdAndUserId(chapterId,
+                userId);
         if (chapterSummaries.isPresent()) {
             log.info("Retrieved {} summaries for chapter {}", chapterSummaries.get().size(), chapterId);
         } else {
@@ -42,20 +43,21 @@ public class ChapterSummaryService {
         return chapterSummaries;
     }
 
-    public Optional<ChapterSummary> getReferenceById(Long chapterId) {
-        log.info("Retrieving summary for chapter {}", chapterId);
-        Optional<ChapterSummary> chapterSummary = Optional.of(chapterSummaryRepo.getReferenceById(chapterId));
+    public Optional<ChapterSummary> findByIdAndUserId(Long chapterSummaryId, Long userId) {
+        log.info("Retrieving summary for chapter {}", chapterSummaryId);
+        Optional<ChapterSummary> chapterSummary = Optional
+                .of(chapterSummaryRepo.findByIdAndUserId(chapterSummaryId, userId));
         if (chapterSummary.isPresent()) {
-            log.info("Summary found for chapter {}", chapterId);
+            log.info("Summary found for chapter {}", chapterSummaryId);
         } else {
-            log.warn("Summary for chapter {} not found, returning.", chapterId);
+            log.warn("Summary for chapter {} not found, returning.", chapterSummaryId);
         }
         return chapterSummary;
     }
 
-    public boolean deleteById(Long chapterId) {
+    public boolean deleteByIdAndUserId(Long chapterId, Long userId) {
         log.info("Deleting chapter {}...", chapterId);
-        chapterSummaryRepo.deleteById(chapterId);
+        chapterSummaryRepo.deleteByIdAndUserId(chapterId, userId);
         boolean existsById = chapterSummaryRepo.existsById(chapterId);
         boolean isDeleted = !existsById;
         if (isDeleted) {
