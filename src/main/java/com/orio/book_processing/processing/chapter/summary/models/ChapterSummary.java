@@ -1,6 +1,6 @@
 package com.orio.book_processing.processing.chapter.summary.models;
 
-import com.orio.book_processing.auth.User;
+import com.orio.book_processing.auth.models.User;
 import com.orio.book_processing.book_management.models.Chapter;
 
 import jakarta.persistence.Column;

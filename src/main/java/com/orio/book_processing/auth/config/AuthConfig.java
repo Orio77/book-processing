@@ -1,4 +1,4 @@
-package com.orio.book_processing.auth;
+package com.orio.book_processing.auth.config;
 
 import java.nio.charset.StandardCharsets;
 
@@ -26,6 +26,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
+import com.orio.book_processing.auth.services.AuthUserDetailsService;
 
 @Configuration
 public class AuthConfig {

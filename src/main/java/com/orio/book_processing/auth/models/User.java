@@ -1,4 +1,4 @@
-package com.orio.book_processing.auth;
+package com.orio.book_processing.auth.models;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

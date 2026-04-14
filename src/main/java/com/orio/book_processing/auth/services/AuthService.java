@@ -1,4 +1,4 @@
-package com.orio.book_processing.auth;
+package com.orio.book_processing.auth.services;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -6,6 +6,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import com.orio.book_processing.auth.dtos.LoginRequest;
+import com.orio.book_processing.auth.dtos.LoginResponse;
+import com.orio.book_processing.auth.dtos.RegisterRequest;
+import com.orio.book_processing.auth.dtos.RegisterResponse;
+import com.orio.book_processing.auth.models.User;
+import com.orio.book_processing.auth.repositories.UserRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

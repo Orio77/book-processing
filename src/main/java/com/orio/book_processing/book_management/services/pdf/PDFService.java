@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.orio.book_processing.auth.User;
-import com.orio.book_processing.auth.UserRepository;
+import com.orio.book_processing.auth.models.User;
+import com.orio.book_processing.auth.repositories.UserRepository;
 import com.orio.book_processing.book_management.models.PDF;
 import com.orio.book_processing.book_management.repositories.PDFRepository;
 

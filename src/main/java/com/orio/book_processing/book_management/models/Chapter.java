@@ -5,7 +5,7 @@ import java.util.List;
 
 import java.util.stream.Collectors;
 
-import com.orio.book_processing.auth.User;
+import com.orio.book_processing.auth.models.User;
 
 import jakarta.annotation.Nullable;
 import jakarta.persistence.CascadeType;

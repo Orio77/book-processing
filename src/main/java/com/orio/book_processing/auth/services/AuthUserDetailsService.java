@@ -1,9 +1,12 @@
-package com.orio.book_processing.auth;
+package com.orio.book_processing.auth.services;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import com.orio.book_processing.auth.models.User;
+import com.orio.book_processing.auth.repositories.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

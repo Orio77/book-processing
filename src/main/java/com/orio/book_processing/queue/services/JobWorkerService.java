@@ -1,6 +1,5 @@
 package com.orio.book_processing.queue.services;
 
-import com.orio.book_processing.auth.UserRepository;
 import java.util.List;
 import java.util.Optional;
 
@@ -9,6 +8,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import com.orio.book_processing.auth.repositories.UserRepository;
 import com.orio.book_processing.queue.events.JobCompletionEvent;
 import com.orio.book_processing.queue.events.JobCreationEvent;
 import com.orio.book_processing.queue.models.Job;

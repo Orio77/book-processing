@@ -9,8 +9,8 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.orio.book_processing.auth.User;
-import com.orio.book_processing.auth.UserRepository;
+import com.orio.book_processing.auth.models.User;
+import com.orio.book_processing.auth.repositories.UserRepository;
 import com.orio.book_processing.book_management.models.Sentence;
 import com.orio.book_processing.book_management.services.sentence.SentenceService;
 import com.orio.book_processing.processing.ideas.extraction.dtos.IdeaExtractionRequest;

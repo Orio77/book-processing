@@ -1,4 +1,4 @@
-package com.orio.book_processing.auth;
+package com.orio.book_processing.auth.dtos;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 
 @Getter
-public class RegisterRequest {
+public class LoginRequest {
 
     @Email
     @NotBlank

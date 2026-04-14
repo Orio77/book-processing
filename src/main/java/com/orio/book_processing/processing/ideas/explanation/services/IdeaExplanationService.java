@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.orio.book_processing.auth.UserRepository;
+import com.orio.book_processing.auth.repositories.UserRepository;
 import com.orio.book_processing.processing.ideas.explanation.models.IdeaExplanation;
 import com.orio.book_processing.processing.ideas.explanation.repositories.IdeaExplanationRepository;
 import com.orio.book_processing.processing.ideas.extraction.models.Idea;

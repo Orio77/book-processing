@@ -3,7 +3,7 @@ package com.orio.book_processing.processing.ideas.extraction.models;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.orio.book_processing.auth.User;
+import com.orio.book_processing.auth.models.User;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;

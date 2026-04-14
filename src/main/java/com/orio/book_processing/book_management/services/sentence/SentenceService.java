@@ -5,8 +5,8 @@ import java.util.stream.IntStream;
 
 import org.springframework.stereotype.Service;
 
-import com.orio.book_processing.auth.User;
-import com.orio.book_processing.auth.UserRepository;
+import com.orio.book_processing.auth.models.User;
+import com.orio.book_processing.auth.repositories.UserRepository;
 import com.orio.book_processing.book_management.dtos.request.PageRange;
 import com.orio.book_processing.book_management.models.Chapter;
 import com.orio.book_processing.book_management.models.PDF;

@@ -2,7 +2,7 @@ package com.orio.book_processing.processing.chapter.summary;
 
 import org.springframework.stereotype.Service;
 
-import com.orio.book_processing.auth.UserRepository;
+import com.orio.book_processing.auth.repositories.UserRepository;
 import com.orio.book_processing.book_management.models.Chapter;
 import com.orio.book_processing.book_management.services.chapter.ChapterService;
 import com.orio.book_processing.core.exceptions.LLMGenerationException;

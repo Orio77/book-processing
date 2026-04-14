@@ -1,6 +1,6 @@
 package com.orio.book_processing.chat.models;
 
-import com.orio.book_processing.auth.User;
+import com.orio.book_processing.auth.models.User;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
