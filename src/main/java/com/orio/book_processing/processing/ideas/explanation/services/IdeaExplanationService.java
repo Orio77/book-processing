@@ -114,6 +114,7 @@ public class IdeaExplanationService {
         return Optional.of(savedExplanation);
     }
 
+    @Transactional
     public List<Optional<IdeaExplanation>> createExplanations(Long chapterId, Long userId) {
         List<Idea> ideas = ideaRepo.findDistinctByUserIdAndSentencesSentenceChapterId(chapterId, userId);
         return ideas.stream()

@@ -15,6 +15,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
 @Entity
@@ -27,7 +28,8 @@ public class Idea {
 
     private String title;
 
-    @OneToMany(mappedBy = "idea", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @OneToMany(mappedBy = "idea", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<IdeaArgument> arguments = new ArrayList<>();
 
     @OneToMany(mappedBy = "idea", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)

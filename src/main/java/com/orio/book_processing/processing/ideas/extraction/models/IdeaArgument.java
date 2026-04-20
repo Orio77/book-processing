@@ -12,6 +12,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
 @Entity
@@ -28,6 +29,7 @@ public class IdeaArgument {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String text;
 
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "idea_id", nullable = false)
     private Idea idea;
