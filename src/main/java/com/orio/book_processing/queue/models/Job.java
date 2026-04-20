@@ -1,5 +1,9 @@
 package com.orio.book_processing.queue.models;
 
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
+
 import com.orio.book_processing.auth.models.User;
 
 import jakarta.persistence.Column;
@@ -40,6 +44,10 @@ public class Job {
 
     @ManyToOne
     private User user;
+
+    @CreationTimestamp
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
 
     public enum JobType {
         PDF_UPLOAD, CHAPTER_SUMMARY, CHAT, IDEA_EXTRACTION, IDEA_EXPLANATION, IDEAS_EXPLANATION
