@@ -2,6 +2,7 @@ package com.orio.book_processing.book_management.services.chapter;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 import org.springframework.stereotype.Service;
 
@@ -26,13 +27,15 @@ public class ChapterService {
 
     public List<Chapter> createChapters(PDF pdf, List<PageRange> chapterPageRanges) {
 
-        List<Chapter> chapters = chapterPageRanges.stream().map((PageRange pageRange) -> {
-            Chapter chapter = new Chapter();
-            chapter.setPdf(pdf);
-            chapter.setStartPage(pageRange.startPage());
-            chapter.setEndPage(pageRange.endPage());
-            return chapter;
-        }).toList();
+        List<Chapter> chapters = chapterPageRanges.stream()
+                .filter(getPageRangePredicates(pdf.getTotalPages()))
+                .map((PageRange pageRange) -> {
+                    Chapter chapter = new Chapter();
+                    chapter.setPdf(pdf);
+                    chapter.setStartPage(pageRange.startPage());
+                    chapter.setEndPage(pageRange.endPage());
+                    return chapter;
+                }).toList();
 
         log.info("Created {} chapters out of {} page ranges", chapters.size(), chapterPageRanges.size());
         return chapters;
@@ -45,22 +48,10 @@ public class ChapterService {
         chapterRepo.saveAll(chapters);
     }
 
-    public int getChapterIndex(int pageIndex, List<PageRange> chapterPageRanges) {
-        log.info("Looking for chapter for page {}", pageIndex);
-        // Find the range wihtin which the page is placed
-        for (int i = 0; i < chapterPageRanges.size(); i++) {
-            log.debug("Looking for page {} in range {} - {}", pageIndex, chapterPageRanges.get(i).startPage(),
-                    chapterPageRanges.get(i).endPage());
-            if (pageIndex >= chapterPageRanges.get(i).startPage() && pageIndex <= chapterPageRanges.get(i).endPage()) {
-                log.info("Found chapter for page {} in range {} - {}", pageIndex, chapterPageRanges.get(i).startPage(),
-                        chapterPageRanges.get(i).endPage());
-                return i;
-            }
-        }
-
-        log.warn("Couldn't find page {} in chapter ranges: {}", pageIndex, chapterPageRanges);
-        // When page isn't placed within any of chapter page ranges
-        throw new IllegalArgumentException("Invalid page range");
+    public Optional<Chapter> getChapterForPage(int pageIndex, List<Chapter> chapters) {
+        return chapters.stream()
+                .filter(ch -> pageIndex >= ch.getStartPage() && pageIndex <= ch.getEndPage())
+                .findFirst();
     }
 
     public Optional<Chapter> getChapter(Long id, Long userId) throws EntityNotFoundException {
@@ -78,5 +69,13 @@ public class ChapterService {
 
     public List<Chapter> getAllChapters(Long pdfId, Long userId) {
         return chapterRepo.getByPdfIdAndUserId(pdfId, userId);
+    }
+
+    private Predicate<PageRange> getPageRangePredicates(int numPages) {
+        return (PageRange pageRange) -> pageRange.startPage() >= 0
+                && pageRange.endPage() >= 0
+                && pageRange.endPage() >= pageRange.startPage()
+                && pageRange.startPage() <= numPages
+                && pageRange.endPage() <= numPages;
     }
 }
