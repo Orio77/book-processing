@@ -1,0 +1,51 @@
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            # Auth service — /auth/** (active once auth-service is extracted)
+            - id: auth-service
+              uri: lb://auth-service
+              predicates:
+                - Path=/auth/**
+
+            # Books service — POST /api/pdf/process/** (enqueue job, returns 202 + jobId)
+            - id: books-service-process-enqueue
+              uri: lb://books-service
+              predicates:
+                - Path=/api/pdf/process/**
+                - Method=POST
+
+            # Processing service — GET/PUT/DELETE /api/pdf/process/** (read/edit results)
+            - id: processing-service-results
+              uri: lb://processing-service
+              predicates:
+                - Path=/api/pdf/process/**
+                - Method=GET,PUT,DELETE
+
+            # Books service — WebSocket / SockJS (covers /ws, /ws/info, /ws/{srv}/{sess}/*)
+            - id: books-service-ws
+              uri: lb://books-service
+              predicates:
+                - Path=/ws/**
+
+            # Books service — catch-all (chat, jobs, PDF management, SPA, static assets)
+            - id: books-service-default
+              uri: lb://books-service
+              predicates:
+                - Path=/**
+
+server:
+  port: 8080
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    register-with-eureka: false
+    fetch-registry: true
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka/}

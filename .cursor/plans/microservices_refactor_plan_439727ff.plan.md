@@ -7,7 +7,7 @@ todos:
     status: completed
   - id: infra-skeleton
     content: Implement eureka-server and api-gateway (Spring Cloud, method-aware routes) and a docker-compose skeleton with postgres + eureka + gateway (no RabbitMQ). Verify the (still-monolithic) books-service runs behind the gateway.
-    status: pending
+    status: completed
   - id: extract-auth
     content: "Extract auth-service: move auth/* (controller, AuthService, JwtService, User, UserRepository, AuthConfig), give it schema 'auth', Eureka client, route /auth/** via gateway. Verify register/login end-to-end."
     status: pending

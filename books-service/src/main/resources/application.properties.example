@@ -18,3 +18,10 @@ spring.threads.virtual.enabled=true
 
 # CORS Configuration
 app.cors.allowed-origins=*
+
+# Server port — gateway occupies 8080 locally; set to 8081 for dev
+server.port=8081
+
+# Eureka client
+eureka.client.service-url.defaultZone=http://localhost:8761/eureka/
+eureka.instance.prefer-ip-address=true
