@@ -13,10 +13,10 @@ todos:
     status: completed
   - id: books-as-client
     content: "Turn books-service into a Eureka client + OAuth2 resource server (shared JWT secret) behind the gateway; keep PDF/chapter/sentence/chat/queue/processing here temporarily. Checkpoint: app works as auth + books."
-    status: pending
+    status: completed
   - id: db-queue-internal
     content: "Refactor job dispatch inside books-service: remove Spring ApplicationEvents for job lifecycle; keep Job in PostgreSQL as the queue; PDF_UPLOAD handled locally by a dedicated worker; LLM job types stay PENDING until claimed. De-risk the DB queue before splitting processing-service."
-    status: pending
+    status: completed
   - id: grpc-server
     content: "Define books.proto in shared-proto (chapter/sentence reads + job queue RPCs: ClaimNextJob, CompleteJob) and implement the gRPC server in books-service."
     status: pending
