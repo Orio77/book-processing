@@ -81,6 +81,29 @@ services:
       - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
       - APP_CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-http://localhost:*}
       - SECURITY_JWT_SECRET=${JWT_SECRET:-replace-with-a-long-random-secret-at-least-32-characters}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+
+  processing-service:
+    build:
+      context: ./processing-service
+      dockerfile: Dockerfile
+    ports:
+      - "8083:8080"
+    environment:
+      - SERVER_PORT=8080
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/BookProcessing
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD:-mypass}
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
+      - APP_CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-http://localhost:*}
+      - SECURITY_JWT_SECRET=${JWT_SECRET:-replace-with-a-long-random-secret-at-least-32-characters}
+      - BOOKS_GRPC_HOST=books-service
+      - BOOKS_GRPC_PORT=9090
       - SPRING_AI_MODEL_CHAT=${AI_MODEL:-google-genai}
       - SPRING_AI_GOOGLE_GENAI_API_KEY=${GEMINI_API_KEY:-}
       - SPRING_AI_GOOGLE_GENAI_CHAT_OPTIONS_MODEL=${GEMINI_MODEL:-gemini-3.1-flash-lite-preview}
@@ -89,6 +112,8 @@ services:
         condition: service_healthy
       eureka-server:
         condition: service_healthy
+      books-service:
+        condition: service_started
 
 volumes:
   postgres-data:

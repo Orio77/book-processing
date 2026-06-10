@@ -22,7 +22,7 @@ todos:
     status: completed
   - id: extract-processing
     content: "Extract processing-service: move summary/ideas-extraction/ideas-explanation + chat LLM generation + LLM model config; convert entities to plain-id references (userId/chapterId/sentenceId); wire gRPC client for chapter text and job claim/complete; add @Scheduled poller that claims PENDING jobs; schema 'processing'."
-    status: pending
+    status: completed
   - id: books-job-completion
     content: "In books-service, implement CompleteJob gRPC handler: update Job (status/resultId/errorText) and send STOMP to /user/{uid}/queue/jobs/completed; route GET/PUT/DELETE /api/pdf/process/** to processing-service via gateway."
     status: pending

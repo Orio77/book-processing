@@ -18,6 +18,10 @@ service BooksService {
   // PostgreSQL-backed job queue
   rpc ClaimNextJob(ClaimJobRequest) returns (ClaimJobResponse);
   rpc CompleteJob(CompleteJobRequest) returns (CompleteJobResponse);
+
+  // Persists a generated chat response (ChatResponse entity is owned by
+  // books-service; processing-service only generates the text).
+  rpc SaveChatResponse(SaveChatResponseRequest) returns (SaveChatResponseResponse);
 }
 
 message ChapterRequest {
@@ -67,4 +71,16 @@ message CompleteJobRequest {
 
 message CompleteJobResponse {
   bool ok = 1;
+}
+
+message SaveChatResponseRequest {
+  int64 chapter_id = 1;
+  int64 user_id = 2;
+  string query = 3;
+  string content = 4;
+  repeated int64 context_sentence_ids = 5;
+}
+
+message SaveChatResponseResponse {
+  int64 chat_response_id = 1;
 }

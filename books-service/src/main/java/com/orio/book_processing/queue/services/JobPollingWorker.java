@@ -15,9 +15,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Polls the PostgreSQL job queue and executes claimed jobs locally.
- * PDF_UPLOAD stays in books-service permanently; the LLM poller is a
- * temporary stand-in until processing-service claims those types over gRPC.
+ * Polls the PostgreSQL job queue for locally-handled jobs (PDF_UPLOAD).
+ * LLM job types stay PENDING until processing-service claims them over gRPC.
  */
 @Slf4j
 @Service
@@ -26,10 +25,6 @@ public class JobPollingWorker {
 
     private static final Set<JobType> LOCAL_TYPES = Set.of(JobType.PDF_UPLOAD);
 
-    // TEMPORARY: handled here until processing-service takes over via gRPC ClaimNextJob
-    private static final Set<JobType> LLM_TYPES = Set.of(JobType.CHAPTER_SUMMARY, JobType.CHAT,
-            JobType.IDEA_EXTRACTION, JobType.IDEA_EXPLANATION, JobType.IDEAS_EXPLANATION);
-
     private final List<JobHandler> handlers;
     private final JobClaimService jobClaimService;
     private final JobCompletionService jobCompletionService;
@@ -37,11 +32,6 @@ public class JobPollingWorker {
     @Scheduled(fixedDelayString = "${app.queue.poll-interval-ms:1000}")
     public void pollLocalJobs() {
         drainQueue(LOCAL_TYPES);
-    }
-
-    @Scheduled(fixedDelayString = "${app.queue.poll-interval-ms:1000}")
-    public void pollLlmJobs() {
-        drainQueue(LLM_TYPES);
     }
 
     private void drainQueue(Set<JobType> types) {

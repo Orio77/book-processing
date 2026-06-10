@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import com.orio.book_processing.book_management.models.Chapter;
 import com.orio.book_processing.book_management.repositories.SentenceRepository;
 import com.orio.book_processing.book_management.services.chapter.ChapterService;
+import com.orio.book_processing.chat.dtos.ChatContextSentenceDTO;
+import com.orio.book_processing.chat.services.impl.ChatResponseService;
 import com.orio.book_processing.queue.models.Job;
 import com.orio.book_processing.queue.models.Job.JobStatus;
 import com.orio.book_processing.queue.models.Job.JobType;
@@ -20,6 +22,8 @@ import com.orio.proto.books.ClaimJobRequest;
 import com.orio.proto.books.ClaimJobResponse;
 import com.orio.proto.books.CompleteJobRequest;
 import com.orio.proto.books.CompleteJobResponse;
+import com.orio.proto.books.SaveChatResponseRequest;
+import com.orio.proto.books.SaveChatResponseResponse;
 import com.orio.proto.books.Sentence;
 import com.orio.proto.books.SentenceIdsRequest;
 
@@ -43,6 +47,7 @@ public class BooksGrpcService extends BooksServiceGrpc.BooksServiceImplBase {
     private final SentenceRepository sentenceRepo;
     private final JobClaimService jobClaimService;
     private final JobCompletionService jobCompletionService;
+    private final ChatResponseService chatResponseService;
 
     @Override
     public void getChapterText(ChapterRequest request, StreamObserver<ChapterTextResponse> responseObserver) {
@@ -126,6 +131,20 @@ public class BooksGrpcService extends BooksServiceGrpc.BooksServiceImplBase {
         }
 
         responseObserver.onNext(CompleteJobResponse.newBuilder().setOk(true).build());
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void saveChatResponse(SaveChatResponseRequest request,
+            StreamObserver<SaveChatResponseResponse> responseObserver) {
+        List<ChatContextSentenceDTO> context = request.getContextSentenceIdsList().stream()
+                .map(id -> new ChatContextSentenceDTO(id, null))
+                .toList();
+
+        Long chatResponseId = chatResponseService.save(request.getChapterId(), request.getQuery(),
+                request.getContent(), context, request.getUserId());
+
+        responseObserver.onNext(SaveChatResponseResponse.newBuilder().setChatResponseId(chatResponseId).build());
         responseObserver.onCompleted();
     }
 
