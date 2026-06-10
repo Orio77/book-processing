@@ -10,7 +10,7 @@ todos:
     status: completed
   - id: extract-auth
     content: "Extract auth-service: move auth/* (controller, AuthService, JwtService, User, UserRepository, AuthConfig), give it schema 'auth', Eureka client, route /auth/** via gateway. Verify register/login end-to-end."
-    status: pending
+    status: completed
   - id: books-as-client
     content: "Turn books-service into a Eureka client + OAuth2 resource server (shared JWT secret) behind the gateway; keep PDF/chapter/sentence/chat/queue/processing here temporarily. Checkpoint: app works as auth + books."
     status: pending

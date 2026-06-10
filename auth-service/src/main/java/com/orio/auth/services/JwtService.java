@@ -1,4 +1,4 @@
-package com.orio.book_processing.auth.services;
+package com.orio.auth.services;
 
 import java.time.Instant;
 
@@ -9,7 +9,7 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 
-import com.orio.book_processing.auth.models.User;
+import com.orio.auth.models.User;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

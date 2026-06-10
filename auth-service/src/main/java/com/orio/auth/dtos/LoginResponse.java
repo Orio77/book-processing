@@ -1,4 +1,4 @@
-package com.orio.book_processing.auth.dtos;
+package com.orio.auth.dtos;
 
 import java.time.Instant;
 

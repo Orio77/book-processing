@@ -1,4 +1,4 @@
-package com.orio.book_processing.auth.models;
+package com.orio.auth.models;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,14 +11,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Read-only view of the user table owned by auth-service (schema 'auth').
- * Kept here temporarily until entities are converted to plain userId columns.
- */
 @Getter
 @Setter
 @Entity
-@Table(name = "appUser", schema = "auth")
+@Table(name = "appUser")
 @NoArgsConstructor
 public class User {
 
