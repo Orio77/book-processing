@@ -17,9 +17,12 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import org.springframework.hateoas.EntityModel;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.orio.book_processing.book_management.dtos.request.PageRange;
 import com.orio.book_processing.book_management.dtos.request.PdfUploadDTO;
+import com.orio.book_processing.book_management.dtos.response.ChapterModelAssembler;
 import com.orio.book_processing.book_management.dtos.response.ChapterResponse;
 import com.orio.book_processing.book_management.dtos.response.PdfResponse;
 import com.orio.book_processing.book_management.dtos.response.SentenceResponse;
@@ -50,6 +53,7 @@ public class PDFController {
     private final ChapterService chapterService;
     private final SentenceService sentenceService;
     private final JobDispatcher jobDispatcher;
+    private final ChapterModelAssembler chapterModelAssembler;
 
     private Long currentUserId(Jwt jwt) {
         return ((Number) jwt.getClaim("uid")).longValue();
@@ -107,27 +111,29 @@ public class PDFController {
     }
 
     @GetMapping("/chapter/get/{chapterId}")
-    public ResponseEntity<ChapterResponse> getChapter(@PathVariable Long chapterId, @AuthenticationPrincipal Jwt jwt) {
+    public ResponseEntity<EntityModel<ChapterResponse>> getChapter(@PathVariable Long chapterId,
+            @AuthenticationPrincipal Jwt jwt) {
         Long userId = currentUserId(jwt);
 
         try {
             Chapter chapter = chapterService.getChapter(chapterId, userId)
                     .orElseThrow(() -> new EntityNotFoundException("No chapter found for id " + chapterId));
-            return ResponseEntity.ok(ChapterResponse.from(chapter));
+            return ResponseEntity.ok(chapterModelAssembler.toModel(chapter, userId));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
     }
 
     @GetMapping("/chapter/get/all/{pdfId}")
-    public ResponseEntity<List<ChapterResponse>> getAllChaptersByPdf(@PathVariable Long pdfId,
+    public ResponseEntity<List<EntityModel<ChapterResponse>>> getAllChaptersByPdf(@PathVariable Long pdfId,
             @AuthenticationPrincipal Jwt jwt) {
         Long userId = currentUserId(jwt);
 
         List<Chapter> chapters = chapterService.getAllChapters(pdfId, userId);
 
         return chapters.isEmpty() ? ResponseEntity.noContent().build()
-                : ResponseEntity.ok(chapters.stream().map(ChapterResponse::from).toList());
+                : ResponseEntity.ok(
+                        chapters.stream().map(chapter -> chapterModelAssembler.toModel(chapter, userId)).toList());
     }
 
     @GetMapping("/sentence/get/{pdfId}")

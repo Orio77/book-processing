@@ -25,13 +25,13 @@ todos:
     status: completed
   - id: books-job-completion
     content: "In books-service, implement CompleteJob gRPC handler: update Job (status/resultId/errorText) and send STOMP to /user/{uid}/queue/jobs/completed; route GET/PUT/DELETE /api/pdf/process/** to processing-service via gateway."
-    status: pending
+    status: completed
   - id: hateoas-hal
     content: Add spring-hateoas to books-service; build conditional HAL link representations for Job (self/cancel/result/retry by status) and Chapter (summary/generate-summary, ideas/extract-ideas).
-    status: pending
+    status: completed
   - id: dockerize-finalize
     content: Add multi-stage Dockerfiles for all 5 services, finalize docker-compose (env/profiles/schemas, depends_on/healthchecks), validate full flow with `docker-compose up`, and update the project doc.
-    status: pending
+    status: completed
 isProject: false
 ---
 

@@ -20,6 +20,10 @@ public interface JobRepository extends JpaRepository<Job, Long> {
 
     Optional<Job> findByIdAndUserId(Long id, Long userId);
 
+    /** Used for conditional HAL links — e.g. "has a summary been generated for this chapter". */
+    boolean existsByUserIdAndTypeAndStatusAndPayloadContaining(Long userId, Job.JobType type, Job.JobStatus status,
+            String payloadFragment);
+
     /**
      * Atomically picks the oldest PENDING job of one of the given types. The row
      * stays locked until the surrounding transaction commits; concurrent claimers

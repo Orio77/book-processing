@@ -1,6 +1,6 @@
 # Mini-projekt — opis aplikacji
 
-**Autor:** Maciej [Nazwisko]
+**Autor:** Maciej Lisak
 **Temat:** Mikroserwisowa platforma do przetwarzania książek PDF z wykorzystaniem LLM
 
 ---
@@ -44,10 +44,11 @@ Aplikacja powstaje na bazie istniejącego monolitu w Spring Boot, który zostani
 
 3. **processing-service**
    - Wykonuje "ciężkie" zadania LLM: streszczenia rozdziałów, ekstrakcja idei, wyjaśnienia idei, chat w kontekście rozdziału.
-   - Odczytuje zadania do przetworzenia z kolejki w bazie danych.
-   - Pobiera tekst rozdziału z books-service przez gRPC.
-   - Komunikuje się z LLM (Gemini CLI lub mock).
-   - Schemat bazy: `processing` (przechowuje wygenerowane streszczenia, idee i wyjaśnienia).
+   - Pobiera zadania z kolejki przez gRPC (`ClaimNextJob`) i finalizuje je przez gRPC (`CompleteJob`) — nie ma własnej kolejki ani dostępu do tabeli `job`.
+   - Pobiera tekst rozdziału i zdania z books-service przez gRPC; wygenerowaną odpowiedź chatu zapisuje z powrotem w books-service (gRPC `SaveChatResponse` — encja `ChatResponse` pozostaje własnością books-service).
+   - Serwuje odczyt/edycję wyników (`GET/PUT/DELETE /api/pdf/process/**`) jako OAuth2 resource server (wspólny sekret JWT).
+   - Komunikuje się z LLM (Google Gemini, Gemini CLI lub mock).
+   - Schemat bazy: `processing` (przechowuje wygenerowane streszczenia, idee i wyjaśnienia; encje odwołują się do danych books-service wyłącznie przez identyfikatory: `userId`, `chapterId`, `sentenceId`).
 
 ### 2.2. Infrastruktura
 
@@ -68,20 +69,20 @@ Istniejący klient AJAX (TypeScript, framework SPA) komunikujący się wyłączn
       ▼
 [Spring Cloud Gateway] ◄──► [Eureka]
       │
-      ├──► [auth-service]      JWT
+      ├──► [auth-service]              /auth/**  (JWT)
       │
-      └──► [books-service]     PDF/Chapter/Sentence/Job, WebSocket
-                │
-                │ tworzy zadanie LLM w kolejce w bazie
-                ▼
-       [kolejka w bazie]
-                │
-                │ odczytuje/przetwarza zadanie
-                ▼
-       [processing-service]
-                │
-                │ gRPC: pobiera tekst rozdziału
-                └──► [books-service]
+      ├──► [books-service]             /api/pdf/**, /api/job/**, /ws,
+      │         │                      POST /api/pdf/process/**  (enqueue)
+      │         │ zapisuje Job (PENDING) w tabeli books.job
+      │         ▼
+      │    [kolejka w PostgreSQL]
+      │         ▲
+      │         │ gRPC ClaimNextJob (FOR UPDATE SKIP LOCKED → IN_PROGRESS)
+      │         │ gRPC CompleteJob  (COMPLETED/FAILED → STOMP do klienta)
+      │         │ gRPC GetChapterText / GetChapterSentences / SaveChatResponse
+      │         │
+      └──► [processing-service]        GET/PUT/DELETE /api/pdf/process/**
+                                       (odczyt/edycja wyników)
 ```
 
 ---
@@ -98,19 +99,38 @@ Wszystkie publiczne endpointy są typu RESTful (JSON). Klient AJAX konsumuje je 
 - `/api/job/*` — status zadań i ich wyniki.
 
 ### Kolejka oparta o bazę danych — komunikacja asynchroniczna między serwisami
-books-service tworzy rekordy zadań w tabeli Job w bazie danych. processing-service cyklicznie odczytuje nowe zadania do przetworzenia. Po zakończeniu przetwarzania status zadania jest aktualizowany w bazie, a books-service wysyła powiadomienie WebSocket do klienta. Ten schemat jest już zaimplementowany (kolejka w bazie).
+books-service zapisuje zadanie jako rekord `Job` w stanie `PENDING` w tabeli `books.job` — sama tabela jest kolejką (bez RabbitMQ, bez eventów Spring). processing-service cyklicznie (poller `@Scheduled`) pobiera zadania przez gRPC `ClaimNextJob`: books-service atomowo wybiera najstarsze `PENDING` zapytaniem
+
+```sql
+SELECT * FROM job
+WHERE status = 'PENDING' AND type IN (:types)
+ORDER BY created_at
+LIMIT 1
+FOR UPDATE SKIP LOCKED
+```
+
+i przestawia je na `IN_PROGRESS`, dzięki czemu zadanie trafia do dokładnie jednego workera. Po przetworzeniu processing-service wywołuje gRPC `CompleteJob` (status `COMPLETED`/`FAILED`, `resultId`, `errorText`), a books-service wysyła powiadomienie WebSocket do klienta. Zadania `PDF_UPLOAD` obsługuje lokalny worker w books-service na tej samej kolejce.
 
 ### gRPC — komunikacja synchroniczna między serwisami
-processing-service potrzebuje pełnego tekstu rozdziału do wywołań LLM. Zamiast bezpośredniego dostępu do bazy (cross-schema) lub REST-a, korzysta z gRPC do books-service:
+processing-service korzysta z gRPC do books-service zarówno dla danych rozdziałów, jak i obsługi kolejki:
 
 ```proto
 service BooksService {
+  // Dane rozdziału (wejście dla LLM)
   rpc GetChapterText(ChapterRequest) returns (ChapterTextResponse);
   rpc GetChapterSentences(ChapterRequest) returns (stream Sentence);
+  rpc GetSentencesByIds(SentenceIdsRequest) returns (stream Sentence);
+
+  // Kolejka zadań (PostgreSQL w books-service)
+  rpc ClaimNextJob(ClaimJobRequest) returns (ClaimJobResponse);
+  rpc CompleteJob(CompleteJobRequest) returns (CompleteJobResponse);
+
+  // Zapis wygenerowanej odpowiedzi chatu (encja należy do books-service)
+  rpc SaveChatResponse(SaveChatResponseRequest) returns (SaveChatResponseResponse);
 }
 ```
 
-Definicja `.proto` jest dzielona między oba serwisy poprzez wspólny moduł Maven.
+Definicja `.proto` jest dzielona poprzez wspólny moduł Maven (`shared-proto`); serwer gRPC działa w books-service na porcie 9090.
 
 ### HATEOAS / HAL
 Wybrane endpointy zwracają reprezentacje z linkami HAL. Najlepiej pasuje to do encji **Job**, której stan determinuje dostępne akcje:
@@ -148,4 +168,4 @@ Każdy serwis dostarczany jako obraz Docker (multi-stage build, oparty na `eclip
 
 ## 5. Status prac
 
-Istnieje działający monolityczny backend pokrywający całą logikę biznesową (parsowanie PDF, kolejka zadań w pamięci - obecnie jest już zaimplementowana jako kolejka w bazie danych, integracja z LLM, REST API, WebSocket). Mini-projekt polega na rozbiciu monolitu na opisane mikroserwisy oraz zastąpieniu wewnętrznych mechanizmów (eventy Spring, bezpośredni dostęp do bazy między modułami) wymaganymi technologiami komunikacyjnymi (gRPC, HAL, kolejka przez bazę danych).
+Refaktoryzacja zakończona. Monolit został rozbity na 5 serwisów (eureka-server, api-gateway, auth-service, books-service, processing-service) w wielomodułowym monorepo Maven. Eventy Spring zostały zastąpione kolejką w PostgreSQL (statusy `PENDING → IN_PROGRESS → COMPLETED/FAILED/CANCELLED`, claim przez `FOR UPDATE SKIP LOCKED`), komunikacja między serwisami odbywa się przez gRPC (kontrakt w module `shared-proto`), encje processing-service odwołują się do danych books-service przez identyfikatory, a reprezentacje `Job` i `Chapter` zawierają warunkowe linki HAL. Każdy serwis ma wielostopniowy (multi-stage) Dockerfile, a całość — wraz z PostgreSQL (schematy `auth`, `books`, `processing`), Eureką i gatewayem — uruchamia się jednym poleceniem `docker-compose up` (healthchecki + `depends_on` pilnują kolejności startu).
