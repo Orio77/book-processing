@@ -19,7 +19,7 @@ todos:
     status: completed
   - id: grpc-server
     content: "Define books.proto in shared-proto (chapter/sentence reads + job queue RPCs: ClaimNextJob, CompleteJob) and implement the gRPC server in books-service."
-    status: pending
+    status: completed
   - id: extract-processing
     content: "Extract processing-service: move summary/ideas-extraction/ideas-explanation + chat LLM generation + LLM model config; convert entities to plain-id references (userId/chapterId/sentenceId); wire gRPC client for chapter text and job claim/complete; add @Scheduled poller that claims PENDING jobs; schema 'processing'."
     status: pending

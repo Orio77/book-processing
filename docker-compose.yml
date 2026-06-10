@@ -70,8 +70,10 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8081:8080"
+      - "9090:9090"
     environment:
       - SERVER_PORT=8080
+      - GRPC_SERVER_PORT=9090
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/BookProcessing
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD:-mypass}
