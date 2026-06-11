@@ -19,8 +19,11 @@ class JavaTokenizerServiceTest {
     private JavaTokenizerService tokenizerService;
 
     static Stream<Arguments> argumentProvider() {
-        return Stream.of(Arguments.of("This is a test. This is a T.L.A. test. Now with a Dr. in it.",
-                List.of("This is a test. ", "This is a T.L.A. test. ", "Now with a Dr. in it.")));
+        return Stream.of(
+                Arguments.of("This is a test. This is a T.L.A. test. Now with a Dr. in it.",
+                        List.of("This is a test. ", "This is a T.L.A. test. ", "Now with a Dr. in it.")),
+                Arguments.of("", List.of()),
+                Arguments.of("One sentence only.", List.of("One sentence only.")));
     }
 
     @ParameterizedTest

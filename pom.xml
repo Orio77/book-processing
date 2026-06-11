@@ -30,6 +30,7 @@
     <properties>
         <java.version>21</java.version>
         <spring-ai.version>2.0.0-M2</spring-ai.version>
+        <jacoco.version>0.8.12</jacoco.version>
     </properties>
     <dependencies>
         <dependency>
@@ -146,6 +147,149 @@
                         </exclude>
                     </excludes>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.version}</version>
+                <executions>
+                    <execution>
+                        <id>jacoco-prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>jacoco-report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>jacoco-check</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <rule>
+                                    <element>BUNDLE</element>
+                                    <includes>
+                                        <include>com/orio/book_processing/book_management/**</include>
+                                    </includes>
+                                    <limits>
+                                        <limit counter="LINE" value="COVEREDRATIO" minimum="0.80" />
+                                    </limits>
+                                </rule>
+                                <rule>
+                                    <element>BUNDLE</element>
+                                    <includes>
+                                        <include>com/orio/book_processing/book_management/services/**</include>
+                                    </includes>
+                                    <limits>
+                                        <limit counter="LINE" value="COVEREDRATIO" minimum="1.00" />
+                                    </limits>
+                                </rule>
+                                <rule>
+                                    <element>BUNDLE</element>
+                                    <includes>
+                                        <include>com/orio/book_processing/chat/**</include>
+                                    </includes>
+                                    <limits>
+                                        <limit counter="LINE" value="COVEREDRATIO" minimum="0.80" />
+                                    </limits>
+                                </rule>
+                                <rule>
+                                    <element>BUNDLE</element>
+                                    <includes>
+                                        <include>com/orio/book_processing/chat/services/**</include>
+                                    </includes>
+                                    <limits>
+                                        <limit counter="LINE" value="COVEREDRATIO" minimum="1.00" />
+                                    </limits>
+                                </rule>
+                                <rule>
+                                    <element>BUNDLE</element>
+                                    <includes>
+                                        <include>com/orio/book_processing/core/**</include>
+                                    </includes>
+                                    <limits>
+                                        <limit counter="LINE" value="COVEREDRATIO" minimum="0.80" />
+                                    </limits>
+                                </rule>
+                                <rule>
+                                    <element>BUNDLE</element>
+                                    <includes>
+                                        <include>com/orio/book_processing/core/config/**</include>
+                                    </includes>
+                                    <excludes>
+                                        <exclude>com/orio/book_processing/core/config/GeminiCliChatModel</exclude>
+                                        <exclude>com/orio/book_processing/core/config/MockChatModel</exclude>
+                                    </excludes>
+                                    <limits>
+                                        <limit counter="LINE" value="COVEREDRATIO" minimum="1.00" />
+                                    </limits>
+                                </rule>
+                                <rule>
+                                    <element>BUNDLE</element>
+                                    <includes>
+                                        <include>com/orio/book_processing/processing/chapter/**</include>
+                                    </includes>
+                                    <limits>
+                                        <limit counter="LINE" value="COVEREDRATIO" minimum="0.80" />
+                                    </limits>
+                                </rule>
+                                <rule>
+                                    <element>BUNDLE</element>
+                                    <includes>
+                                        <include>com/orio/book_processing/processing/chapter/**/services/**</include>
+                                    </includes>
+                                    <limits>
+                                        <limit counter="LINE" value="COVEREDRATIO" minimum="1.00" />
+                                    </limits>
+                                </rule>
+                                <rule>
+                                    <element>BUNDLE</element>
+                                    <includes>
+                                        <include>com/orio/book_processing/processing/ideas/**</include>
+                                    </includes>
+                                    <limits>
+                                        <limit counter="LINE" value="COVEREDRATIO" minimum="0.80" />
+                                    </limits>
+                                </rule>
+                                <rule>
+                                    <element>BUNDLE</element>
+                                    <includes>
+                                        <include>com/orio/book_processing/processing/ideas/**/services/**</include>
+                                    </includes>
+                                    <limits>
+                                        <limit counter="LINE" value="COVEREDRATIO" minimum="1.00" />
+                                    </limits>
+                                </rule>
+                                <rule>
+                                    <element>BUNDLE</element>
+                                    <includes>
+                                        <include>com/orio/book_processing/queue/**</include>
+                                    </includes>
+                                    <limits>
+                                        <limit counter="LINE" value="COVEREDRATIO" minimum="0.80" />
+                                    </limits>
+                                </rule>
+                                <rule>
+                                    <element>BUNDLE</element>
+                                    <includes>
+                                        <include>com/orio/book_processing/queue/services/**</include>
+                                    </includes>
+                                    <limits>
+                                        <limit counter="LINE" value="COVEREDRATIO" minimum="1.00" />
+                                    </limits>
+                                </rule>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

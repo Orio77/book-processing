@@ -4,9 +4,10 @@ spring.application.name=book-processing
 
 # Database Configuration
 spring.jpa.hibernate.ddl-auto=update
+spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
 spring.datasource.url=jdbc:postgresql://localhost:5432/book-processing
 spring.datasource.username=postgres
-spring.datasource.password=mypass
+spring.datasource.password=Czarodziej1#
 
 # File Upload Limits
 spring.servlet.multipart.max-file-size=50MB
