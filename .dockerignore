@@ -1,4 +1,9 @@
 **/target
+!eureka-server/target/*.jar
+!api-gateway/target/*.jar
+!auth-service/target/*.jar
+!books-service/target/*.jar
+!processing-service/target/*.jar
 logs
 .git
 .github
