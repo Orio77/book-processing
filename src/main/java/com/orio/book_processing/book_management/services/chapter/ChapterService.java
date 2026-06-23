@@ -27,13 +27,18 @@ public class ChapterService {
 
     public List<Chapter> createChapters(PDF pdf, List<PageRange> chapterPageRanges) {
 
-        List<Chapter> chapters = chapterPageRanges.stream()
+        java.util.List<PageRange> validRanges = chapterPageRanges.stream()
                 .filter(getPageRangePredicates(pdf.getTotalPages()))
-                .map((PageRange pageRange) -> {
+                .toList();
+
+        List<Chapter> chapters = java.util.stream.IntStream.range(0, validRanges.size())
+                .mapToObj(i -> {
+                    PageRange pageRange = validRanges.get(i);
                     Chapter chapter = new Chapter();
                     chapter.setPdf(pdf);
                     chapter.setStartPage(pageRange.startPage());
                     chapter.setEndPage(pageRange.endPage());
+                    chapter.setTitle("Chapter " + (i + 1));
                     return chapter;
                 }).toList();
 

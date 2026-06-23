@@ -18,3 +18,15 @@ spring.threads.virtual.enabled=true
 
 # CORS Configuration
 app.cors.allowed-origins=*
+
+# Google OAuth2 Client
+spring.security.oauth2.client.registration.google.client-id=${GOOGLE_CLIENT_ID:your-google-client-id}
+spring.security.oauth2.client.registration.google.client-secret=${GOOGLE_CLIENT_SECRET:your-google-client-secret}
+spring.security.oauth2.client.registration.google.scope=openid,profile,email
+
+# Console encoding (fix for Polish diacritics)
+spring.output.ansi.enabled=always
+server.tomcat.uri-encoding=UTF-8
+
+# Suppress open-in-view warning
+spring.jpa.open-in-view=false
